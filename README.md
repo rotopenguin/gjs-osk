@@ -3,6 +3,8 @@ A (diminishing returns) alteration on the proper GJS-OSK. I shuffled around the 
 
 In the process, I probably made gnome-shell spew more oopsies into the journal. 
 
+I have done nothing to deconflict this with the O.G. GJS-OSK. My whole installation process is to copy my extension.js and physicalLayouts.json files over the other guy's extension install. I have no idea what I'm doing.
+
 
 # The original Notes -
 
