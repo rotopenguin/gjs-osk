@@ -828,7 +828,12 @@ class Keyboard extends Dialog {
 				} else if (i.code == 42 || i.code == 54) {
 					this.shiftButtons.push(keyBtn)
 				}
-				currentGrid.attach(keyBtn, c, 5 + r, (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2, r == 0 ? 3 : (Object.hasOwn(keydef, "height") ? keydef.height : 1) * 4)
+				let buttonHeight; // Squishy Fn Row
+				if ( 0 ) //r==0
+					{ buttonHeight = 3 ;}
+					else 
+					{ buttonHeight = (Object.hasOwn(keydef, "height") ? keydef.height : 1) * 4; }
+				currentGrid.attach(keyBtn, c, 3 + r, (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2, buttonHeight) ;
 				keyBtn.visible = true
 				c += (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2
 				this.keys.push(keyBtn)
@@ -858,7 +863,7 @@ class Keyboard extends Dialog {
 			if (!topBtnWidth) topBtnWidth = ((Object.hasOwn(kRow[kRow.length - 1], "width") && (Object.hasOwn(kRow[kRow.length - 1], "key"))) ? kRow[kRow.length - 1].width : 1)
 			const size = c;
 			if (!rowSize) rowSize = size;
-			r += r == 0 ? 3 : 4
+			r += 4; //r == 0 ? 3 : 4 //Squishy Fn Row
 		}
 
 		if (left != null) {
@@ -883,7 +888,8 @@ class Keyboard extends Dialog {
 			settingsBtn.connect("clicked", () => {
 				this.settingsOpenFunction();
 			})
-			gridLeft.attach(settingsBtn, 0, 0, 2 * topBtnWidth, 3)
+			const topBarHeight = 1 ;
+			//gridLeft.attach(settingsBtn, 0, 0, 2 * topBtnWidth, topBarHeight)
 			this.keys.push(settingsBtn)
 
 			const closeBtn = new St.Button({
@@ -896,7 +902,7 @@ class Keyboard extends Dialog {
 				this.close();
 				this.closedFromButton = true;
 			})
-			gridRight.attach(closeBtn, (rowSize - 2 * topBtnWidth), 0, 2 * topBtnWidth, 3)
+			//gridRight.attach(closeBtn, (rowSize - 2 * topBtnWidth), 0, 2 * topBtnWidth, topBarHeight)
 			this.keys.push(closeBtn)
 
 			let moveHandleLeft = new St.Button({
@@ -917,7 +923,7 @@ class Keyboard extends Dialog {
 				}
 				this.event(event, false)
 			})
-			gridLeft.attach(moveHandleLeft, 2 * topBtnWidth, 0, (halfSize - 2 * topBtnWidth), 3)
+			//gridLeft.attach(moveHandleLeft, 2 * topBtnWidth, 0, (halfSize - 2 * topBtnWidth), topBarHeight)
 
 			let moveHandleRight = new St.Button({
 				x_expand: true,
@@ -937,9 +943,9 @@ class Keyboard extends Dialog {
 				}
 				this.event(event, false)
 			})
-			gridRight.attach(moveHandleRight, halfSize, 0, (rowSize - halfSize - 2 * topBtnWidth), 3)
-			gridLeft.attach(new St.Widget({ x_expand: true, y_expand: true }), 0, 3, halfSize, 1)
-			gridRight.attach(new St.Widget({ x_expand: true, y_expand: true }), halfSize, 3, (rowSize - halfSize), 1)
+			//gridRight.attach(moveHandleRight, halfSize, 0, (rowSize - halfSize - 2 * topBtnWidth), topBarHeight)
+			//gridLeft.attach(new St.Widget({ x_expand: true, y_expand: true }), 0, 3, halfSize, 1)
+			//gridRight.attach(new St.Widget({ x_expand: true, y_expand: true }), halfSize, 3, (rowSize - halfSize), 1)
 		} else {
 			this.box.add_style_class_name("boxLay");
 			this.box.set_style("background-color: rgba(" + this.settings.get_double("background-r" + this.settings.scheme) + "," + this.settings.get_double("background-g" + this.settings.scheme) + "," + this.settings.get_double("background-b" + this.settings.scheme) + ", " + this.settings.get_double("background-a" + this.settings.scheme) + "); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
@@ -958,7 +964,7 @@ class Keyboard extends Dialog {
 			settingsBtn.connect("clicked", () => {
 				this.settingsOpenFunction();
 			})
-			grid.attach(settingsBtn, 0, 0, 2 * topBtnWidth, 3)
+			//grid.attach(settingsBtn, 0, 0, 2 * topBtnWidth, 3)
 			this.keys.push(settingsBtn)
 
 			const closeBtn = new St.Button({
@@ -971,7 +977,7 @@ class Keyboard extends Dialog {
 				this.close();
 				this.closedFromButton = true;
 			})
-			grid.attach(closeBtn, (rowSize - 2 * topBtnWidth), 0, 2 * topBtnWidth, 3)
+			//grid.attach(closeBtn, (rowSize - 2 * topBtnWidth), 0, 2 * topBtnWidth, 3)
 			this.keys.push(closeBtn)
 
 			let moveHandle = new St.Button({
@@ -992,8 +998,8 @@ class Keyboard extends Dialog {
 				}
 				this.event(event, false)
 			})
-			grid.attach(moveHandle, 2 * topBtnWidth, 0, (rowSize - 4 * topBtnWidth), 3)
-			grid.attach(new St.Widget({ x_expand: true, y_expand: true }), 0, 3, rowSize, 1)
+			//grid.attach(moveHandle, 2 * topBtnWidth, 0, (rowSize - 4 * topBtnWidth), 3)
+			//grid.attach(new St.Widget({ x_expand: true, y_expand: true }), 0, 3, rowSize, 1)
 		}
 
 		this.keys.forEach(item => {
