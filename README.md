@@ -1,4 +1,13 @@
-# [GJS OSK](https://extensions.gnome.org/extension/5949/gjs-osk/)
+# my dumb GJS OSK fork 
+A (diminishing returns) alteration on the proper GJS-OSK. I shuffled around the Compact (US) keyboard a little bit. Got rid of the Settings/drag-bar/✖ bar, Fn row, turned the chicklet Arrow up/down keys into a key row. Moved Esc to ~, and moved tilde to the > (we don't need that in the US of A). Since the ✖️ button is gone, you really need the Panel Indicator to summon/dismiss it.
+
+In the process, I probably made gnome-shell spew more oopsies into the journal. 
+
+I have done nothing to deconflict this with the O.G. GJS-OSK. My whole installation process is to copy my extension.js and physicalLayouts.json files over the other guy's extension install. I have no idea what I'm doing.
+
+
+# The original Notes -
+
 A (marginally) better on screen keyboard for GNOME 45+ (go to the [pre-45 branch](https://github.com/Vishram1123/gjs-osk/tree/pre-45) for compatibility from gnome 42-44)
 ## Advantages over the default OSK:
 -	Function, modifier, tab, and arrow key support
