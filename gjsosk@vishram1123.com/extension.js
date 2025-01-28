@@ -1221,17 +1221,13 @@ class Keyboard extends Dialog {
     sendKey(keys) {
         try {
             for (var i = 0; i < keys.length; i++) {
-                this.inputDevice.notify_key(Clutter.get_current_event_time(), keys[i], Clutter.KeyState.PRESSED);
+                this.inputDevice.notify_key(Clutter.get_current_event_time()-1, keys[i], Clutter.KeyState.PRESSED);
             }
-            if (this.keyTimeout !== null) {
-                clearTimeout(this.keyTimeout);
-                this.keyTimeout = null;
-            }
-            this.keyTimeout = setTimeout(() => {
-                for (var j = keys.length - 1; j >= 0; j--) {
+            for (var j = keys.length - 1; j >= 0; j--) {
                     this.inputDevice.notify_key(Clutter.get_current_event_time(), keys[j], Clutter.KeyState.RELEASED);
-                }
-            }, 100);
+            }
+            
+
         } catch (err) {
             throw new Error("GJS-OSK: An unknown error occured. Please report this bug to the Issues page (https://github.com/Vishram1123/gjs-osk/issues):\n\n" + err + "\n\nKeys Pressed: " + keys);
         }
