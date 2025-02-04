@@ -173,15 +173,7 @@ export default class GjsOskExtension extends Extension {
             if (currentMonitorId == -1) {
                 currentMonitorId = 0;
             }
-            /* Don't need this if you simply ship all of the keycode files as part of the extension. 
-            if (!Gio.File.new_for_path(this.path + "/keycodes").query_exists(null)) {
-                Gio.File.new_for_path(this.path + "/keycodes").make_directory(null);
-                let [status, out, err, code] = GLib.spawn_command_line_sync("tar -Jxf " + this.path + "/keycodes.tar.xz -C " + this.path + "/keycodes")
-                if (err != "" || code != 0) {
-                    throw new Error(err);
-                }
-            }
-            */
+         
             if (this.Keyboard) {
                 this.Keyboard.destroy();
                 this.Keyboard = null;
