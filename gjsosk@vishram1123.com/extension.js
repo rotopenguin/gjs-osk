@@ -173,6 +173,7 @@ export default class GjsOskExtension extends Extension {
             if (currentMonitorId == -1) {
                 currentMonitorId = 0;
             }
+            /* Don't need this if you simply ship all of the keycode files as part of the extension. 
             if (!Gio.File.new_for_path(this.path + "/keycodes").query_exists(null)) {
                 Gio.File.new_for_path(this.path + "/keycodes").make_directory(null);
                 let [status, out, err, code] = GLib.spawn_command_line_sync("tar -Jxf " + this.path + "/keycodes.tar.xz -C " + this.path + "/keycodes")
@@ -180,6 +181,7 @@ export default class GjsOskExtension extends Extension {
                     throw new Error(err);
                 }
             }
+            */
             if (this.Keyboard) {
                 this.Keyboard.destroy();
                 this.Keyboard = null;
@@ -1221,13 +1223,17 @@ class Keyboard extends Dialog {
     sendKey(keys) {
         try {
             for (var i = 0; i < keys.length; i++) {
-                this.inputDevice.notify_key(Clutter.get_current_event_time()-1, keys[i], Clutter.KeyState.PRESSED);
+                this.inputDevice.notify_key(Clutter.get_current_event_time(), keys[i], Clutter.KeyState.PRESSED);
             }
-            for (var j = keys.length - 1; j >= 0; j--) {
+            if (this.keyTimeout !== null) {
+                clearTimeout(this.keyTimeout);
+                this.keyTimeout = null;
+            }
+            this.keyTimeout = setTimeout(() => {
+                for (var j = keys.length - 1; j >= 0; j--) {
                     this.inputDevice.notify_key(Clutter.get_current_event_time(), keys[j], Clutter.KeyState.RELEASED);
-            }
-            
-
+                }
+            }, 100);
         } catch (err) {
             throw new Error("GJS-OSK: An unknown error occured. Please report this bug to the Issues page (https://github.com/Vishram1123/gjs-osk/issues):\n\n" + err + "\n\nKeys Pressed: " + keys);
         }
