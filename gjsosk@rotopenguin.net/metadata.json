@@ -1,0 +1,14 @@
+{
+    "description": "A fork of GJS On Screen Keyboard",
+    "gettext-domain": "gjsosk@rotopenguin.net",
+    "name": "GJS OSK(zero)",
+    "settings-schema": "org.gnome.shell.extensions.gjsosk",
+    "shell-version": [
+        "45",
+        "46",
+        "47"
+    ],
+    "url": "https://github.com/rotopenguin/gjs-osk",
+    "uuid": "gjsosk@rotopenguin.net",
+    "version": 1
+}
