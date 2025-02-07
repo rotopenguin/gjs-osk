@@ -281,7 +281,12 @@ export default class GjsOskExtension extends Extension {
             this._indicator.destroy();
             this._indicator = null;
         }
-        this.Keyboard.destroy();
+        
+        if (this.Keyboard) { 
+            this.Keyboard.destroy();  // Sometimes Keyboard is null at this point 🤷
+            this.Keyboard = null;
+        }
+
         this.settings.disconnect(this.settingsHandlers[0]);
         this.darkSchemeSettings.disconnect(this.settingsHandlers[1])
         this.inputLanguageSettings.disconnect(this.settingsHandlers[2])
@@ -685,7 +690,8 @@ class Keyboard extends Dialog {
         this.box.set_opacity(0);
         this.keys = [];
         let monitor = Main.layoutManager.monitors[currentMonitorId]
-        let layoutName = Object.keys(layouts)[(monitor.width > monitor.height) ? this.settings.get_int("layout-landscape") : this.settings.get_int("layout-portrait")];
+        let layoutName = Object.keys(layouts)[(monitor.width > monitor.height) ? this.settings.get_int("layout-landscape") : this.settings.get_int("layout-portrait")]; 
+        console.log("Layout chosen is", layoutName);
         this.box.width = Math.round((monitor.width - this.settings.get_int("snap-spacing-px") * 2) * (layoutName.includes("Split") ? 1 : this.widthPercent))
         this.box.height = Math.round((monitor.height - this.settings.get_int("snap-spacing-px") * 2) * this.heightPercent)
 
