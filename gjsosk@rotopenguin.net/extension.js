@@ -1233,7 +1233,7 @@ class Keyboard extends Dialog {
                 }
             }, 100);
         } catch (err) {
-            throw new Error("GJS-OSK: An unknown error occured. Please report this bug to the Issues page (https://github.com/Vishram1123/gjs-osk/issues):\n\n" + err + "\n\nKeys Pressed: " + keys);
+            throw new Error("GJS-OSK: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
         }
     }
 
