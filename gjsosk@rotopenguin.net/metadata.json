@@ -1,5 +1,5 @@
 {
-    "description": "A fork of GJS On Screen Keyboard",
+    "description": "A fork of the GJS On Screen Keyboard",
     "gettext-domain": "gjsosk@rotopenguin.net",
     "name": "GJS OSK(zero)",
     "settings-schema": "org.gnome.shell.extensions.gjsosk",
