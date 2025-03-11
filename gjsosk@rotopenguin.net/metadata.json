@@ -4,12 +4,9 @@
     "name": "GJS OSK(zero)",
     "settings-schema": "org.gnome.shell.extensions.gjsosk",
     "shell-version": [
-        "45",
-        "46",
         "47",
         "48"
     ],
     "url": "https://github.com/rotopenguin/gjs-osk",
     "uuid": "gjsosk@rotopenguin.net",
-    "version": 2
 }
