@@ -1202,9 +1202,9 @@ class Keyboard extends Dialog {
         }
 
         traverse(keycodes);
-        instances.forEach(i => {
-            this.inputDevice.notify_key(Clutter.get_current_event_time(), i, Clutter.KeyState.RELEASED);
-        })
+        //instances.forEach(i => {
+        //    this.inputDevice.notify_key(Clutter.get_current_event_time(), i, Clutter.KeyState.RELEASED);
+        //})
 
         this.keys.forEach(item => {
             item.key_pressed = false;
