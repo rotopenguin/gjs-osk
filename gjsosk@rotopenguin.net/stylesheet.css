@@ -28,7 +28,7 @@
      box-sizing: border-box;
      background-image: url(ui/icons/hicolor/scalable/actions/transparent.svg);
      background-repeat: no-repeat;
-     background-position: center;
+    /* background-position: center; //st-theme-node.c says you should be a number*/
 }
 
 .dr-b {
@@ -55,7 +55,7 @@
 .down_btn,
 .right_btn {
      background-repeat: no-repeat;
-     background-position: center;
+     /* background-position: center; //st-theme-node.c says you should be a number*/
 }
 
 .close_btn.regular,
