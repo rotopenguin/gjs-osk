@@ -1222,7 +1222,8 @@ class Keyboard extends Dialog {
             }
         })
     }
-    sendKey(keys) {
+
+    /*sendKey(keys) { //try variant with backdated event_time?
         try {
             for (var i = 0; i < keys.length; i++) {
                 this.inputDevice.notify_key(Clutter.get_current_event_time(), keys[i], Clutter.KeyState.PRESSED);
@@ -1236,6 +1237,23 @@ class Keyboard extends Dialog {
                     this.inputDevice.notify_key(Clutter.get_current_event_time(), keys[j], Clutter.KeyState.RELEASED);
                 }
             }, 100);
+        } catch (err) {
+            throw new Error("GJS-OSK: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
+        }
+    } */
+
+    sendKey(keys) {
+        try {
+            const event_time=Clutter.get_current_event_time();
+            for (var i = 0; i < keys.length; i++) {
+                this.inputDevice.notify_key(event_time-1, keys[i], Clutter.KeyState.PRESSED);
+            }
+        
+            
+            for (var j = keys.length - 1; j >= 0; j--) {
+                 this.inputDevice.notify_key(event_time, keys[j], Clutter.KeyState.RELEASED);
+            }
+            
         } catch (err) {
             throw new Error("GJS-OSK: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
         }
@@ -1320,12 +1338,12 @@ class Keyboard extends Dialog {
     setNormMod(button) {
         if (this.mod.includes(button.char.code)) {
             this.mod.splice(this.mod.indexOf(button.char.code), this.mod.indexOf(button.char.code) + 1);
-            if (!(button.char.code == 42) && !(button.char.code == 54))
+            if (!(button.char.code == 42) && !(button.char.code == 54)) //shift
                 button.remove_style_class_name("selected");
             this.modBtns.splice(this.modBtns.indexOf(button), this.modBtns.indexOf(button) + 1);
             this.inputDevice.notify_key(Clutter.get_current_event_time(), button.char.code, Clutter.KeyState.RELEASED);
         } else {
-            if (!(button.char.code == 42) && !(button.char.code == 54))
+            if (!(button.char.code == 42) && !(button.char.code == 54)) //shift
                 button.add_style_class_name("selected");
             this.mod.push(button.char.code);
             this.modBtns.push(button);
