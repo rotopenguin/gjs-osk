@@ -1093,7 +1093,7 @@ class Keyboard extends Dialog {
                         if (evType == "mouse") {
                             item.space_motion_handler = item.connect("motion_event", (actor, event) => {
                                 let absX = event.get_coords()[0];
-                                if (Math.abs(absX - lastPos) > 20) {
+                                if (Math.abs(absX - lastPos) > 10) {
                                     if (absX > lastPos) {
                                         this.sendKey([106])
                                     } else {
@@ -1106,7 +1106,7 @@ class Keyboard extends Dialog {
                             item.space_motion_handler = item.connect("touch_event", (actor, event) => {
                                 if (event.type() == Clutter.EventType.TOUCH_UPDATE) {
                                     let absX = event.get_coords()[0];
-                                    if (Math.abs(absX - lastPos) > 20) {
+                                    if (Math.abs(absX - lastPos) > 10) {
                                         if (absX > lastPos) {
                                             this.sendKey([106])
                                         } else {

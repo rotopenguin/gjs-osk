@@ -50,7 +50,7 @@
       <default>false</default>
     </key>
     <key name="font-size-px" type="i">
-      <default>17</default>
+      <default>24</default>
     </key>
     <key name="font-bold" type="b">
       <default>false</default>
