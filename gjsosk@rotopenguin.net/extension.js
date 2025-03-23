@@ -285,12 +285,10 @@ export default class GjsOskExtension extends Extension {
         this._quick_settings_indicator.destroy();
         this._quick_settings_indicator = null;
 
-        if (this._indicator !== null) {
-            this._indicator.destroy();
-            this._indicator = null;
-        }
-        if (this.Keyboard != null)
-            this.Keyboard.destroy();
+        this._indicator?.destroy();
+        this._indicator = null;
+    
+        this.Keyboard?.destroy();
         this.settings.disconnect(this.settingsHandlers[0]);
         this.darkSchemeSettings.disconnect(this.settingsHandlers[1])
         this.inputLanguageSettings.disconnect(this.settingsHandlers[2])
@@ -1243,8 +1241,8 @@ class Keyboard extends Dialog {
     } */
 
     sendKey(keys) {
+        const event_time=Clutter.get_current_event_time(); // fun fact - Gnome's genuine OSK multiplies this value *1000. Wat does it mean?
         try {
-            const event_time=Clutter.get_current_event_time(); // fun fact - Gnome's genuine OSK multiplies this value *1000. Wat does it mean?
             for (var i = 0; i < keys.length; i++) {
                 this.inputDevice.notify_key(event_time-1, keys[i], Clutter.KeyState.PRESSED); 
             }
@@ -1255,7 +1253,7 @@ class Keyboard extends Dialog {
             }
             
         } catch (err) {
-            throw new Error("GJS-OSK: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
+            throw new Error("event_time was: "+event_time + ", GJS-OSK: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
         }
     }
 
