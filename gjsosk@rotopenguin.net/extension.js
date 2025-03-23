@@ -1270,7 +1270,6 @@ class Keyboard extends Dialog {
     }
 
     decideMod(i, mBtn) {
-        console.log("gs-osk says keycode is:"+i.code);
         if (i.code == KC.LCTL || i.code == KC.LALT || i.code == KC.RALT || i.code == KC.RCTL || i.code == KC.LWIN) {
             this.setNormMod(mBtn);
         } else if (i.code == KC.LALT || i.code == KC.RALT) {
