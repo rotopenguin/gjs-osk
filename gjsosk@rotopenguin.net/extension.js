@@ -27,6 +27,18 @@ const State = {
     CLOSING: 3,
 };
 
+const KC = {
+    LSHIFT: 42,
+    RSHIFT: 54,
+    CAPSL: 58,
+    NUML: 69,
+    LALT: 56,
+    RALT: 100,
+    LCTL:29,
+    RCTL: 97,
+    LWIN: 125,
+};
+
 class KeyboardMenuToggle extends QuickSettings.QuickMenuToggle {
     static {
         GObject.registerClass(this);
@@ -826,19 +838,19 @@ class Keyboard extends Dialog {
                 const keyBtn = new St.Button(params)
                 keyBtn.add_style_class_name('key')
                 keyBtn.char = i
-                if (i.code == 58) {
+                if (i.code == KC.CAPSL) {
                     this.keymap = Clutter.get_default_backend().get_default_seat().get_keymap()
                     this.capslockConnect = this.keymap.connect("state-changed", (a, e) => {
                         this.setCapsLock(keyBtn, this.keymap.get_caps_lock_state())
                     })
                     this.updateCapsLock = () => this.setCapsLock(keyBtn, this.keymap.get_caps_lock_state())
-                } else if (i.code == 69) {
+                } else if (i.code == KC.NUML) {
                     this.keymap = Clutter.get_default_backend().get_default_seat().get_keymap()
                     this.numLockConnect = this.keymap.connect("state-changed", (a, e) => {
                         this.setNumLock(keyBtn, this.keymap.get_num_lock_state())
                     })
                     this.updateNumLock = () => this.setNumLock(keyBtn, this.keymap.get_num_lock_state())
-                } else if (i.code == 42 || i.code == 54) {
+                } else if (i.code == KC.LSHIFT || i.code == KC.RSHIFT) {
                     this.shiftButtons.push(keyBtn)
                 }
 				let buttonHeight; // Squishy Fn Row
@@ -1258,13 +1270,14 @@ class Keyboard extends Dialog {
     }
 
     decideMod(i, mBtn) {
-        if (i.code == 29 || i.code == 56 || i.code == 97 || i.code == 125) {
+        console.log("gs-osk says keycode is:"+i.code);
+        if (i.code == KC.LCTL || i.code == KC.LALT || i.code == KC.RALT || i.code == KC.RCTL || i.code == KC.LWIN) {
             this.setNormMod(mBtn);
-        } else if (i.code == 100) {
+        } else if (i.code == KC.LALT || i.code == KC.RALT) {
             this.setAlt(mBtn);
-        } else if (i.code == 42 || i.code == 54) {
+        } else if (i.code == KC.LSHIFT || i.code == KC.RSHIFT) {
             this.setShift(mBtn);
-        } else if (i.code == 58 || i.code == 69) {
+        } else if (i.code == KC.CAPSL || i.code == KC.NUML) {
             this.sendKey([mBtn.char.code]);
         } else {
             this.mod.push(i.code);
@@ -1336,12 +1349,12 @@ class Keyboard extends Dialog {
     setNormMod(button) {
         if (this.mod.includes(button.char.code)) {
             this.mod.splice(this.mod.indexOf(button.char.code), this.mod.indexOf(button.char.code) + 1);
-            if (!(button.char.code == 42) && !(button.char.code == 54)) //shift
+            if (!(button.char.code == KC.LSHIFT) && !(button.char.code == KC.RSHIFT)) //shift
                 button.remove_style_class_name("selected");
             this.modBtns.splice(this.modBtns.indexOf(button), this.modBtns.indexOf(button) + 1);
             this.inputDevice.notify_key(Clutter.get_current_event_time(), button.char.code, Clutter.KeyState.RELEASED);
         } else {
-            if (!(button.char.code == 42) && !(button.char.code == 54)) //shift
+            if (!(button.char.code == KC.LSHIFT) && !(button.char.code == KC.RSHIFT)) //shift
                 button.add_style_class_name("selected");
             this.mod.push(button.char.code);
             this.modBtns.push(button);
