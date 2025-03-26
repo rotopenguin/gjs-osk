@@ -1253,7 +1253,14 @@ class Keyboard extends Dialog {
     } */
 
     sendKey(keys) {
-        const event_time=Clutter.get_current_event_time(); // fun fact - Gnome's genuine OSK multiplies this value *1000. Wat does it mean?
+        const event_time=Clutter.get_current_event_time()*1000; // fun fact - Gnome's genuine OSK multiplies this value *1000. 
+        //mutter's notify_key begets meta_virtual_input_device_native_notify_key, which takes in a uint64_t time_us. 
+        //struct ClutterEvent has a timestamp_us, it looks like get pulls stuff out of there. Do I smell a type mismatch??
+        
+        // get_current_event_time produces a guint32. It gets the current event, and asks clutter_event_get_time() of that...
+        // clutter_event_get_time does a us to ms conversion. So, I guess doing a Mul by 1000 is correct!
+        // So annoying to chase this downerino.
+
         try {
             for (var i = 0; i < keys.length; i++) {
                 this.inputDevice.notify_key(event_time-1, keys[i], Clutter.KeyState.PRESSED); 
