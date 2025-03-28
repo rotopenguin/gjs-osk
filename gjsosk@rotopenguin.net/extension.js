@@ -37,6 +37,8 @@ const KC = {
     LCTL:29,
     RCTL: 97,
     LWIN: 125,
+    LEFT: 105,
+    RIGHT: 106,
 };
 
 class KeyboardMenuToggle extends QuickSettings.QuickMenuToggle {
@@ -142,7 +144,7 @@ export default class GjsOskExtension extends Extension {
             }
         }, 300);
         this.tapConnect = global.stage.connect("event", (_actor, event) => {
-            if (event.type() !== 4/*CLUTTER_ENTER*/ && event.type() !== 5/*CLUTTER_LEAVE*/) { 
+            if (event.type() !== Clutter.EventType.ENTER && event.type() !== Clutter.EventType.LEAVE) { 
                 // Events 9 - 12 are CLUTTER_TOUCH_BEGIN, CLUTTER_TOUCH_UPDATE, CLUTTER_TOUCH_END, CLUTTER_TOUCH_CANCEL
                 this.lastInputMethod = [false, event.type() >= 9 && event.type() <= 12, true][this.settings.get_int("enable-tap-gesture")]
             }
@@ -1109,9 +1111,9 @@ class Keyboard extends Dialog {
                                 let absX = event.get_coords()[0];
                                 if (Math.abs(absX - lastPos) > 10) {
                                     if (absX > lastPos) {
-                                        this.sendKey([106])
+                                        this.sendKey([KC.RIGHT])
                                     } else {
-                                        this.sendKey([105])
+                                        this.sendKey([KC.LEFT])
                                     }
                                     lastPos = absX
                                 }
@@ -1122,9 +1124,9 @@ class Keyboard extends Dialog {
                                     let absX = event.get_coords()[0];
                                     if (Math.abs(absX - lastPos) > 10) {
                                         if (absX > lastPos) {
-                                            this.sendKey([106])
+                                            this.sendKey([KC.RIGHT])
                                         } else {
-                                            this.sendKey([105])
+                                            this.sendKey([KC.LEFT])
                                         }
                                         lastPos = absX
                                     }
