@@ -90,13 +90,15 @@ let currentMonitorId = 0;
 // [insert handwriting 1]
 
 export default class GjsOskExtension extends Extension {
-    _openKeyboard(instant) {
+    _openKeyboard(instant) { 
+        //I should probably start disallowing direct scanout in here
         if (this.Keyboard.state == State.CLOSED) {
             this.Keyboard.open(null, !instant ? null : true);
         }
     }
 
     _closeKeyboard(instant) {
+        //I should un-disallow direct scanout here.
         if (this.Keyboard.state == State.OPENED) {
             this.Keyboard.close(!instant ? null : true);
         }
@@ -140,7 +142,8 @@ export default class GjsOskExtension extends Extension {
             }
         }, 300);
         this.tapConnect = global.stage.connect("event", (_actor, event) => {
-            if (event.type() !== 4 && event.type() !== 5) {
+            if (event.type() !== 4/*CLUTTER_ENTER*/ && event.type() !== 5/*CLUTTER_LEAVE*/) { 
+                // Events 9 - 12 are CLUTTER_TOUCH_BEGIN, CLUTTER_TOUCH_UPDATE, CLUTTER_TOUCH_END, CLUTTER_TOUCH_CANCEL
                 this.lastInputMethod = [false, event.type() >= 9 && event.type() <= 12, true][this.settings.get_int("enable-tap-gesture")]
             }
         })
@@ -425,6 +428,7 @@ class Keyboard extends Dialog {
         }
         this._oldMaybeHandleEvent = Main.keyboard.maybeHandleEvent
         Main.keyboard.maybeHandleEvent = (e) => {
+            //11 = CLUTTER_TOUCH_END, 7 = CLUTTER_BUTTON_RELEASE
             let lastInputMethod = [e.type() == 11, e.type() == 11, e.type() == 7 || e.type() == 11][this.settings.get_int("enable-tap-gesture")]
             let ac = global.stage.get_event_actor(e)
             if (this.contains(ac)) {
