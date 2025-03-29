@@ -829,7 +829,7 @@ class Keyboard extends Dialog {
                 } else if (i.code == KC.LSHIFT || i.code == KC.RSHIFT) {
                     this.shiftButtons.push(keyBtn)
                 }
-				let buttonHeight = 4; 
+				const buttonHeight = 4; 
                 
 				currentGrid.attach(keyBtn, c, 3 + r, (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2, buttonHeight) ;
                 keyBtn.visible = true
@@ -875,7 +875,7 @@ class Keyboard extends Dialog {
             this.box.add_style_class_name("regular");
         }
 
-        const settingsBtn = new St.Button({
+        /*const settingsBtn = new St.Button({
             x_expand: true,
             y_expand: true
         })
@@ -885,7 +885,7 @@ class Keyboard extends Dialog {
             this.settingsOpenFunction();
         })
         //grid.attach(settingsBtn, 0, 0, 2 * topBtnWidth, 3)
-        this.keys.push(settingsBtn)
+        this.keys.push(settingsBtn) 
 
         const closeBtn = new St.Button({
             x_expand: true,
@@ -898,11 +898,11 @@ class Keyboard extends Dialog {
             this.closedFromButton = true;
         })
         //grid.attach(closeBtn, (rowSize - 2 * topBtnWidth), 0, 2 * topBtnWidth, 3)
-        this.keys.push(closeBtn)
+        this.keys.push(closeBtn) */
 
         // [insert handwriting 10]
 
-        let moveHandle = new St.Button({
+       /* let moveHandle = new St.Button({
             x_expand: true,
             y_expand: true
         })
@@ -919,7 +919,7 @@ class Keyboard extends Dialog {
                 this.draggable = this.settings.get_boolean("enable-drag");
             }
             this.event(event, false)
-        })
+        })*/
   
 
         this.keys.forEach(item => {
@@ -1045,9 +1045,10 @@ class Keyboard extends Dialog {
             item.connect("button-press-event", () => pressEv("mouse"))
             item.connect("button-release-event", releaseEv)
             item.connect("touch-event", () => {
-                if (Clutter.get_current_event().type() == Clutter.EventType.TOUCH_BEGIN) {
+                const cur_ev_type = Clutter.get_current_event().type();
+                if (cur_ev_type == Clutter.EventType.TOUCH_BEGIN) {
                     pressEv("touch")
-                } else if (Clutter.get_current_event().type() == Clutter.EventType.TOUCH_END || Clutter.get_current_event().type() == Clutter.EventType.TOUCH_CANCEL) {
+                } else if (cur_ev_type == Clutter.EventType.TOUCH_END || cur_ev_type == Clutter.EventType.TOUCH_CANCEL) {
                     releaseEv()
                 }
             })
