@@ -767,7 +767,7 @@ class Keyboard extends Dialog {
         let left;
         let right;
         let topBtnWidth;
-
+/*
         if (layoutName.includes("Split")) {
             this.box.reactive = false;
             left = new St.Widget({
@@ -798,7 +798,7 @@ class Keyboard extends Dialog {
             this.box.add_child(middle)
             this.box.add_child(right)
         }
-
+*/
         this.shiftButtons = [];
         // [insert handwriting 7]
 
@@ -860,11 +860,14 @@ class Keyboard extends Dialog {
                 } else if (i.code == KC.LSHIFT || i.code == KC.RSHIFT) {
                     this.shiftButtons.push(keyBtn)
                 }
-				let buttonHeight; // Squishy Fn Row
+				let buttonHeight = 4; 
+                /* goodbye Squished fn row
 				if ( 0 ) //r==0
 					{ buttonHeight = 3 ;}
 					else 
 					{ buttonHeight = (Object.hasOwn(keydef, "height") ? keydef.height : 1) * 4; }
+                */
+                
 				currentGrid.attach(keyBtn, c, 3 + r, (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2, buttonHeight) ;
                 keyBtn.visible = true
                 c += (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2
@@ -872,18 +875,18 @@ class Keyboard extends Dialog {
                 // [insert handwriting 9]
             } else if (i == "empty space") {
                 c += (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2
-            } else if (i == "split") {
+            } /* else if (i == "split") {
                 currentGrid = gridRight
                 const size = c
                 if (!halfSize) halfSize = size
-            }
+            }*/
         }
 
         for (const kRow of currentLayout) {
             c = 0;
-            if (layoutName.includes("Split")) {
+            /* if (layoutName.includes("Split")) {
                 currentGrid = gridLeft;
-            }
+            } */
             for (const keydef of kRow) {
                 if (keydef instanceof Array) {
                     keydef.forEach(i => { doAddKey(i); r += 2; c -= (Object.hasOwn(i, "width") ? i.width : 1) * 2 });
@@ -899,7 +902,7 @@ class Keyboard extends Dialog {
 			r += 4; //r == 0 ? 3 : 4 //Squishy Fn Row
         }
 
-        if (left != null) {
+       /* if (left != null) {
             this.set_reactive(false)
             left.add_style_class_name("boxLay");
             right.add_style_class_name("boxLay");
@@ -988,7 +991,7 @@ class Keyboard extends Dialog {
             //gridRight.attach(moveHandleRight, halfSize, 0, (rowSize - halfSize - 2 * topBtnWidth), 3)
             //gridLeft.attach(new St.Widget({ x_expand: true, y_expand: true }), 0, 3, halfSize, 1)
             //gridRight.attach(new St.Widget({ x_expand: true, y_expand: true }), halfSize, 3, (rowSize - halfSize), 1)
-        } else {
+        } else { */
             this.box.add_style_class_name("boxLay");
             if (this.settings.get_boolean("system-accent-col") && major >= 47) {
                 if (this.settings.scheme == "-dark") {
@@ -1052,7 +1055,7 @@ class Keyboard extends Dialog {
             })
             //grid.attach(moveHandle, 2 * topBtnWidth, 0, (rowSize - 4 * topBtnWidth), 3) // [insert handwriting 11]
             //grid.attach(new St.Widget({ x_expand: true, y_expand: true }), 0, 3, rowSize, 1)
-        }
+       // }
 
         this.keys.forEach(item => {
             item.set_style("font-size: " + this.settings.get_int("font-size-px") + "px; border-radius: " + (this.settings.get_boolean("round-key-corners") ? (this.settings.get_int("border-spacing-px") + 5) + "px;" : "0;") + "background-size: " + this.settings.get_int("font-size-px") + "px; font-weight: " + (this.settings.get_boolean("font-bold") ? "bold" : "normal") + "; border: " + this.settings.get_int("border-spacing-px") + "px solid transparent;");
