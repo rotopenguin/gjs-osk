@@ -95,6 +95,7 @@ export default class GjsOskExtension extends Extension {
     _openKeyboard(instant) { 
         //I should probably start disallowing direct scanout in here
         if (this.Keyboard.state == State.CLOSED) {
+            global.compositor.enable_unredirect();
             this.Keyboard.open(null, !instant ? null : true);
         }
     }
@@ -103,6 +104,7 @@ export default class GjsOskExtension extends Extension {
         //I should un-disallow direct scanout here.
         if (this.Keyboard.state == State.OPENED) {
             this.Keyboard.close(!instant ? null : true);
+            global.compositor.disable_unredirect();
         }
     }
 
