@@ -767,38 +767,7 @@ class Keyboard extends Dialog {
         let left;
         let right;
         let topBtnWidth;
-/*
-        if (layoutName.includes("Split")) {
-            this.box.reactive = false;
-            left = new St.Widget({
-                reactive: true,
-                layout_manager: new Clutter.GridLayout({
-                    orientation: Clutter.Orientation.HORIZONTAL,
-                    row_homogeneous: true,
-                    column_homogeneous: true
-                }),
-                width: Math.round((monitor.width - this.settings.get_int("snap-spacing-px") * 2) * this.widthPercent) / 2
-            })
-            gridLeft = left.layout_manager;
-            let middle = new St.Widget({
-                reactive: false,
-                width: this.box.width * (1 - this.widthPercent) - 10 + this.settings.get_int("border-spacing-px")
-            });
-            right = new St.Widget({
-                reactive: true,
-                layout_manager: new Clutter.GridLayout({
-                    orientation: Clutter.Orientation.HORIZONTAL,
-                    row_homogeneous: true,
-                    column_homogeneous: true
-                }),
-                width: Math.round((monitor.width - this.settings.get_int("snap-spacing-px") * 2) * this.widthPercent) / 2
-            })
-            gridRight = right.layout_manager;
-            this.box.add_child(left)
-            this.box.add_child(middle)
-            this.box.add_child(right)
-        }
-*/
+
         this.shiftButtons = [];
         // [insert handwriting 7]
 
@@ -861,12 +830,6 @@ class Keyboard extends Dialog {
                     this.shiftButtons.push(keyBtn)
                 }
 				let buttonHeight = 4; 
-                /* goodbye Squished fn row
-				if ( 0 ) //r==0
-					{ buttonHeight = 3 ;}
-					else 
-					{ buttonHeight = (Object.hasOwn(keydef, "height") ? keydef.height : 1) * 4; }
-                */
                 
 				currentGrid.attach(keyBtn, c, 3 + r, (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2, buttonHeight) ;
                 keyBtn.visible = true
@@ -875,18 +838,12 @@ class Keyboard extends Dialog {
                 // [insert handwriting 9]
             } else if (i == "empty space") {
                 c += (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2
-            } /* else if (i == "split") {
-                currentGrid = gridRight
-                const size = c
-                if (!halfSize) halfSize = size
-            }*/
+            }
         }
 
         for (const kRow of currentLayout) {
             c = 0;
-            /* if (layoutName.includes("Split")) {
-                currentGrid = gridLeft;
-            } */
+
             for (const keydef of kRow) {
                 if (keydef instanceof Array) {
                     keydef.forEach(i => { doAddKey(i); r += 2; c -= (Object.hasOwn(i, "width") ? i.width : 1) * 2 });
@@ -899,163 +856,71 @@ class Keyboard extends Dialog {
             if (!topBtnWidth) topBtnWidth = ((Object.hasOwn(kRow[kRow.length - 1], "width") && (Object.hasOwn(kRow[kRow.length - 1], "key"))) ? kRow[kRow.length - 1].width : 1)
             const size = c;
             if (!rowSize) rowSize = size;
-			r += 4; //r == 0 ? 3 : 4 //Squishy Fn Row
+			r += 4; 
         }
 
-       /* if (left != null) {
-            this.set_reactive(false)
-            left.add_style_class_name("boxLay");
-            right.add_style_class_name("boxLay");
-            if (this.settings.get_boolean("system-accent-col") && major >= 47) {
-                if (this.settings.scheme == "-dark") {
-                    left.set_style("background-color: st-darken(-st-accent-color, 30%); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
-                    right.set_style("background-color: st-darken(-st-accent-color, 30%); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
-                } else {
-                    left.set_style("background-color: st-lighten(-st-accent-color, 10%); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
-                    right.set_style("background-color: st-lighten(-st-accent-color, 10%); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
-                }
+        this.box.add_style_class_name("boxLay");
+        if (this.settings.get_boolean("system-accent-col") && major >= 47) {
+            if (this.settings.scheme == "-dark") {
+                this.box.set_style("background-color: st-darken(-st-accent-color, 30%); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
             } else {
-                left.set_style("background-color: rgba(" + this.settings.get_double("background-r" + this.settings.scheme) + "," + this.settings.get_double("background-g" + this.settings.scheme) + "," + this.settings.get_double("background-b" + this.settings.scheme) + ", " + this.settings.get_double("background-a" + this.settings.scheme) + "); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
-                right.set_style("background-color: rgba(" + this.settings.get_double("background-r" + this.settings.scheme) + "," + this.settings.get_double("background-g" + this.settings.scheme) + "," + this.settings.get_double("background-b" + this.settings.scheme) + ", " + this.settings.get_double("background-a" + this.settings.scheme) + "); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
+                this.box.set_style("background-color: st-lighten(-st-accent-color, 10%); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
             }
-            if (this.lightOrDark()) {
-                left.add_style_class_name("inverted");
-                right.add_style_class_name("inverted");
-            } else {
-                left.add_style_class_name("regular");
-                right.add_style_class_name("regular");
+        } else {
+            this.box.set_style("background-color: rgba(" + this.settings.get_double("background-r" + this.settings.scheme) + "," + this.settings.get_double("background-g" + this.settings.scheme) + "," + this.settings.get_double("background-b" + this.settings.scheme) + ", " + this.settings.get_double("background-a" + this.settings.scheme) + "); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
+        }
+        if (this.lightOrDark()) {
+            this.box.add_style_class_name("inverted");
+        } else {
+            this.box.add_style_class_name("regular");
+        }
+
+        const settingsBtn = new St.Button({
+            x_expand: true,
+            y_expand: true
+        })
+        settingsBtn.add_style_class_name("settings_btn")
+        settingsBtn.add_style_class_name("key")
+        settingsBtn.connect("clicked", () => {
+            this.settingsOpenFunction();
+        })
+        //grid.attach(settingsBtn, 0, 0, 2 * topBtnWidth, 3)
+        this.keys.push(settingsBtn)
+
+        const closeBtn = new St.Button({
+            x_expand: true,
+            y_expand: true
+        })
+        closeBtn.add_style_class_name("close_btn")
+        closeBtn.add_style_class_name("key")
+        closeBtn.connect("clicked", () => {
+            this.close();
+            this.closedFromButton = true;
+        })
+        //grid.attach(closeBtn, (rowSize - 2 * topBtnWidth), 0, 2 * topBtnWidth, 3)
+        this.keys.push(closeBtn)
+
+        // [insert handwriting 10]
+
+        let moveHandle = new St.Button({
+            x_expand: true,
+            y_expand: true
+        })
+        moveHandle.add_style_class_name("moveHandle")
+        moveHandle.set_style("font-size: " + this.settings.get_int("font-size-px") + "px; border-radius: " + (this.settings.get_boolean("round-key-corners") ? "5px;" : "0;") + "background-size: " + this.settings.get_int("font-size-px") + "px; font-weight: " + (this.settings.get_boolean("font-bold") ? "bold" : "normal") + "; border: " + this.settings.get_int("border-spacing-px") + "px solid transparent;");
+        if (this.lightOrDark()) {
+            moveHandle.add_style_class_name("inverted");
+        } else {
+            moveHandle.add_style_class_name("regular");
+        }
+
+        moveHandle.connect("event", (actor, event) => {
+            if (event.type() == Clutter.EventType.BUTTON_PRESS || event.type() == Clutter.EventType.TOUCH_BEGIN) {
+                this.draggable = this.settings.get_boolean("enable-drag");
             }
-            const settingsBtn = new St.Button({
-                x_expand: true,
-                y_expand: true
-            })
-            settingsBtn.add_style_class_name("settings_btn")
-            settingsBtn.add_style_class_name("key")
-            settingsBtn.connect("clicked", () => {
-                this.settingsOpenFunction();
-            })
-            //gridLeft.attach(settingsBtn, 0, 0, 2 * topBtnWidth, 3)
-            this.keys.push(settingsBtn)
-
-            const closeBtn = new St.Button({
-                x_expand: true,
-                y_expand: true
-            })
-            closeBtn.add_style_class_name("close_btn")
-            closeBtn.add_style_class_name("key")
-            closeBtn.connect("clicked", () => {
-                this.close();
-                this.closedFromButton = true;
-            })
-            //gridRight.attach(closeBtn, (rowSize - 2 * topBtnWidth), 0, 2 * topBtnWidth, 3)
-            this.keys.push(closeBtn)
-
-            let moveHandleLeft = new St.Button({
-                x_expand: true,
-                y_expand: true
-            })
-            moveHandleLeft.add_style_class_name("moveHandle")
-            moveHandleLeft.set_style("font-size: " + this.settings.get_int("font-size-px") + "px; border-radius: " + (this.settings.get_boolean("round-key-corners") ? "5px;" : "0;") + "background-size: " + this.settings.get_int("font-size-px") + "px; font-weight: " + (this.settings.get_boolean("font-bold") ? "bold" : "normal") + "; border: " + this.settings.get_int("border-spacing-px") + "px solid transparent;");
-            if (this.lightOrDark()) {
-                moveHandleLeft.add_style_class_name("inverted");
-            } else {
-                moveHandleLeft.add_style_class_name("regular");
-            }
-
-            moveHandleLeft.connect("event", (actor, event) => {
-                if (event.type() == Clutter.EventType.BUTTON_PRESS || event.type() == Clutter.EventType.TOUCH_BEGIN) {
-                    this.draggable = this.settings.get_boolean("enable-drag");
-                }
-                this.event(event, false)
-            })
-            //gridLeft.attach(moveHandleLeft, 2 * topBtnWidth, 0, (halfSize - 2 * topBtnWidth), 3)
-
-            let moveHandleRight = new St.Button({
-                x_expand: true,
-                y_expand: true
-            })
-            moveHandleRight.add_style_class_name("moveHandle")
-            moveHandleRight.set_style("font-size: " + this.settings.get_int("font-size-px") + "px; border-radius: " + (this.settings.get_boolean("round-key-corners") ? "5px;" : "0;") + "background-size: " + this.settings.get_int("font-size-px") + "px; font-weight: " + (this.settings.get_boolean("font-bold") ? "bold" : "normal") + "; border: " + this.settings.get_int("border-spacing-px") + "px solid transparent;");
-            if (this.lightOrDark()) {
-                moveHandleRight.add_style_class_name("inverted");
-            } else {
-                moveHandleRight.add_style_class_name("regular");
-            }
-
-            moveHandleRight.connect("event", (actor, event) => {
-                if (event.type() == Clutter.EventType.BUTTON_PRESS || event.type() == Clutter.EventType.TOUCH_BEGIN) {
-                    this.draggable = this.settings.get_boolean("enable-drag");
-                }
-                this.event(event, false)
-            })
-            //gridRight.attach(moveHandleRight, halfSize, 0, (rowSize - halfSize - 2 * topBtnWidth), 3)
-            //gridLeft.attach(new St.Widget({ x_expand: true, y_expand: true }), 0, 3, halfSize, 1)
-            //gridRight.attach(new St.Widget({ x_expand: true, y_expand: true }), halfSize, 3, (rowSize - halfSize), 1)
-        } else { */
-            this.box.add_style_class_name("boxLay");
-            if (this.settings.get_boolean("system-accent-col") && major >= 47) {
-                if (this.settings.scheme == "-dark") {
-                    this.box.set_style("background-color: st-darken(-st-accent-color, 30%); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
-                } else {
-                    this.box.set_style("background-color: st-lighten(-st-accent-color, 10%); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
-                }
-            } else {
-                this.box.set_style("background-color: rgba(" + this.settings.get_double("background-r" + this.settings.scheme) + "," + this.settings.get_double("background-g" + this.settings.scheme) + "," + this.settings.get_double("background-b" + this.settings.scheme) + ", " + this.settings.get_double("background-a" + this.settings.scheme) + "); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
-            }
-            if (this.lightOrDark()) {
-                this.box.add_style_class_name("inverted");
-            } else {
-                this.box.add_style_class_name("regular");
-            }
-
-            const settingsBtn = new St.Button({
-                x_expand: true,
-                y_expand: true
-            })
-            settingsBtn.add_style_class_name("settings_btn")
-            settingsBtn.add_style_class_name("key")
-            settingsBtn.connect("clicked", () => {
-                this.settingsOpenFunction();
-            })
-            //grid.attach(settingsBtn, 0, 0, 2 * topBtnWidth, 3)
-            this.keys.push(settingsBtn)
-
-            const closeBtn = new St.Button({
-                x_expand: true,
-                y_expand: true
-            })
-            closeBtn.add_style_class_name("close_btn")
-            closeBtn.add_style_class_name("key")
-            closeBtn.connect("clicked", () => {
-                this.close();
-                this.closedFromButton = true;
-            })
-            //grid.attach(closeBtn, (rowSize - 2 * topBtnWidth), 0, 2 * topBtnWidth, 3)
-            this.keys.push(closeBtn)
-
-            // [insert handwriting 10]
-
-            let moveHandle = new St.Button({
-                x_expand: true,
-                y_expand: true
-            })
-            moveHandle.add_style_class_name("moveHandle")
-            moveHandle.set_style("font-size: " + this.settings.get_int("font-size-px") + "px; border-radius: " + (this.settings.get_boolean("round-key-corners") ? "5px;" : "0;") + "background-size: " + this.settings.get_int("font-size-px") + "px; font-weight: " + (this.settings.get_boolean("font-bold") ? "bold" : "normal") + "; border: " + this.settings.get_int("border-spacing-px") + "px solid transparent;");
-            if (this.lightOrDark()) {
-                moveHandle.add_style_class_name("inverted");
-            } else {
-                moveHandle.add_style_class_name("regular");
-            }
-
-            moveHandle.connect("event", (actor, event) => {
-                if (event.type() == Clutter.EventType.BUTTON_PRESS || event.type() == Clutter.EventType.TOUCH_BEGIN) {
-                    this.draggable = this.settings.get_boolean("enable-drag");
-                }
-                this.event(event, false)
-            })
-            //grid.attach(moveHandle, 2 * topBtnWidth, 0, (rowSize - 4 * topBtnWidth), 3) // [insert handwriting 11]
-            //grid.attach(new St.Widget({ x_expand: true, y_expand: true }), 0, 3, rowSize, 1)
-       // }
+            this.event(event, false)
+        })
+  
 
         this.keys.forEach(item => {
             item.set_style("font-size: " + this.settings.get_int("font-size-px") + "px; border-radius: " + (this.settings.get_boolean("round-key-corners") ? (this.settings.get_int("border-spacing-px") + 5) + "px;" : "0;") + "background-size: " + this.settings.get_int("font-size-px") + "px; font-weight: " + (this.settings.get_boolean("font-bold") ? "bold" : "normal") + "; border: " + this.settings.get_int("border-spacing-px") + "px solid transparent;");
@@ -1243,24 +1108,6 @@ class Keyboard extends Dialog {
         })
     }
 
-    /*sendKey(keys) { //try variant with backdated event_time?
-        try {
-            for (var i = 0; i < keys.length; i++) {
-                this.inputDevice.notify_key(Clutter.get_current_event_time(), keys[i], Clutter.KeyState.PRESSED);
-            }
-            if (this.keyTimeout !== null) {
-                clearTimeout(this.keyTimeout);
-                this.keyTimeout = null;
-            }
-            this.keyTimeout = setTimeout(() => {
-                for (var j = keys.length - 1; j >= 0; j--) {
-                    this.inputDevice.notify_key(Clutter.get_current_event_time(), keys[j], Clutter.KeyState.RELEASED);
-                }
-            }, 100);
-        } catch (err) {
-            throw new Error("GJS-OSK: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
-        }
-    } */
 
     sendKey(keys) {
         const event_time=Clutter.get_current_event_time()*1000; // fun fact - Gnome's genuine OSK multiplies this value *1000. 
