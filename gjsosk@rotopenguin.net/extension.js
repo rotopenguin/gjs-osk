@@ -93,18 +93,14 @@ let currentMonitorId = 0;
 
 export default class GjsOskExtension extends Extension {
     _openKeyboard(instant) { 
-        //I should probably start disallowing direct scanout in here
         if (this.Keyboard.state == State.CLOSED) {
-            global.compositor.enable_unredirect();
             this.Keyboard.open(null, !instant ? null : true);
         }
     }
 
     _closeKeyboard(instant) {
-        //I should un-disallow direct scanout here.
         if (this.Keyboard.state == State.OPENED) {
             this.Keyboard.close(!instant ? null : true);
-            global.compositor.disable_unredirect();
         }
     }
 
@@ -580,6 +576,7 @@ class Keyboard extends Dialog {
     }
 
     open(noPrep = null, instant = null) {
+        global.compositor.enable_unredirect(); //inhibit direct scanout
         if (this.updateCapsLock) this.updateCapsLock()
         if (this.updateNumLock) this.updateNumLock()
         if (noPrep == null || !noPrep) {
@@ -666,6 +663,8 @@ class Keyboard extends Dialog {
         }
         this.openedFromButton = false
         this.releaseAllKeys();
+        global.compositor.disable_unredirect(); //inhibit direct scanout
+
         // [insert handwrting 6]
     }
 
