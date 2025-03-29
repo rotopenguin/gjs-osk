@@ -576,7 +576,7 @@ class Keyboard extends Dialog {
     }
 
     open(noPrep = null, instant = null) {
-        global.compositor.enable_unredirect(); //inhibit direct scanout
+        global.compositor.disable_unredirect(); //inhibit direct scanout
         if (this.updateCapsLock) this.updateCapsLock()
         if (this.updateNumLock) this.updateNumLock()
         if (noPrep == null || !noPrep) {
@@ -663,7 +663,7 @@ class Keyboard extends Dialog {
         }
         this.openedFromButton = false
         this.releaseAllKeys();
-        global.compositor.disable_unredirect(); //inhibit direct scanout
+        global.compositor.ensable_unredirect(); //de-inhibit direct scanout
 
         // [insert handwrting 6]
     }
