@@ -761,11 +761,8 @@ class Keyboard extends Dialog {
         grid.set_row_homogeneous(true)
         grid.set_column_homogeneous(!layoutName.includes("Split"))
 
-        let gridLeft;
-        let gridRight;
+
         let currentGrid = grid;
-        let left;
-        let right;
         let topBtnWidth;
 
         this.shiftButtons = [];
@@ -1121,7 +1118,7 @@ class Keyboard extends Dialog {
 
         try {
             for (var i = 0; i < keys.length; i++) {
-                this.inputDevice.notify_key(event_time-1, keys[i], Clutter.KeyState.PRESSED); 
+                this.inputDevice.notify_key(event_time-1, keys[i], Clutter.KeyState.PRESSED); // It should be okay to backdate the down events to come before the up events. Right?
             }
         
             
@@ -1231,4 +1228,17 @@ class Keyboard extends Dialog {
         this.alt = false;
         this.updateKeyLabels()
     }
+}
+
+
+class KeyButton extends St {
+    constructor (i, params) { 
+        new St.Button(params);
+     }
+
+
+    set char(x) {this._char = x }
+
+    get char() {return this._char}
+
 }
