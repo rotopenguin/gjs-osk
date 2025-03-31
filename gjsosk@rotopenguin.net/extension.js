@@ -763,7 +763,7 @@ class Keyboard extends Dialog {
 
 
         let currentGrid = grid;
-        let topBtnWidth;
+       // let topBtnWidth;
 
         this.shiftButtons = [];
         // [insert handwriting 7]
@@ -829,14 +829,15 @@ class Keyboard extends Dialog {
                 }
 				const buttonHeight = 4; 
                 
-				currentGrid.attach(keyBtn, c, 3 + r, (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2, buttonHeight) ;
+				currentGrid.attach(keyBtn, c, 3 + r, keydef.width * 2, buttonHeight) ;
                 keyBtn.visible = true
-                c += (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2
+                c +=  keydef.width * 2
                 this.keys.push(keyBtn)
                 // [insert handwriting 9]
-            } else if (i == "empty space") {
-                c += (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2
             }
+            /* else if (i == "empty space") {
+                c += (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2
+            } */
         }
 
         for (const kRow of currentLayout) {
@@ -853,11 +854,11 @@ class Keyboard extends Dialog {
                 }*/
 
             //Now's as good a time as any to give our physicalLayout keys some default values.
-            if (!Object.hasOwn(keydef, "width")) keydef.width = 1;
+            if (! keydef?.width ) keydef.width = 1;
             doAddKey(keydef);
             }
             
-            if (!topBtnWidth) topBtnWidth = ((Object.hasOwn(kRow[kRow.length - 1], "width") && (Object.hasOwn(kRow[kRow.length - 1], "key"))) ? kRow[kRow.length - 1].width : 1)
+        //    if (!topBtnWidth) topBtnWidth = ((Object.hasOwn(kRow[kRow.length - 1], "width") && (Object.hasOwn(kRow[kRow.length - 1], "key"))) ? kRow[kRow.length - 1].width : 1)
             const size = c;
             if (!rowSize) rowSize = size;
 			r += 4; 
