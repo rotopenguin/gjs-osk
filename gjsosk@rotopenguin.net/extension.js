@@ -293,7 +293,7 @@ export default class GjsOskExtension extends Extension {
     }
 
     disable() {
-        this.gnomeKeyboardSettings.disconnect(this.isGnomeKeyboardEnabledHandler)
+        this.gnomeKeyboardSettings.disconnect(this.isGnomeKeyboardEnabledHandler);
         this.gnomeKeyboardSettings.set_boolean('screen-keyboard-enabled', this.isGnomeKeyboardEnabled);
 
         this._quick_settings_indicator.quickSettingsItems.forEach(item => item.destroy());
@@ -305,8 +305,8 @@ export default class GjsOskExtension extends Extension {
     
         this.Keyboard?.destroy();
         this.settings.disconnect(this.settingsHandlers[0]);
-        this.darkSchemeSettings.disconnect(this.settingsHandlers[1])
-        this.inputLanguageSettings.disconnect(this.settingsHandlers[2])
+        this.darkSchemeSettings.disconnect(this.settingsHandlers[1]);
+        this.inputLanguageSettings.disconnect(this.settingsHandlers[2]);
         this.settings = null;
         this.darkSchemeSettings = null;
         this.inputLanguageSettings = null;
@@ -318,11 +318,11 @@ export default class GjsOskExtension extends Extension {
             clearInterval(this.openInterval);
             this.openInterval = null;
         }
-        this._toggle.destroy()
-        this._toggle = null
-        this.settings = null
-        this.Keyboard = null
-        keycodes = null
+        this._toggle?.destroy();
+        this._toggle = null;
+        this.settings = null;
+        this.Keyboard = null;
+        keycodes = null;
         if (this._originalLastDeviceIsTouchscreen !== null) {
             KeyboardUI.KeyboardManager.prototype._lastDeviceIsTouchscreen = this._originalLastDeviceIsTouchscreen;
             this._originalLastDeviceIsTouchscreen = null;
