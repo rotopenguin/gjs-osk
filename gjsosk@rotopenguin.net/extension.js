@@ -778,7 +778,8 @@ class Keyboard extends Dialog {
         let r = 0;
         let c;
         const doAddKey = (keydef) => {
-            const i = Object.hasOwn(keydef, "key") ? keycodes[keydef.key] : Object.hasOwn(keydef, "split") ? "split" : "empty space";
+            //const i = Object.hasOwn(keydef, "key") ? keycodes[keydef.key] : Object.hasOwn(keydef, "split") ? "split" : "empty space";
+            const i = keycodes[keydef.key];
             if (i != null && typeof i !== 'string') {
                 if (i.layers.default == null) {
                     for (var key of Object.keys(i.layers)) {
@@ -842,14 +843,20 @@ class Keyboard extends Dialog {
             c = 0;
 
             for (const keydef of kRow) {
-                if (keydef instanceof Array) {
+                /*if (keydef instanceof Array) {
+                    console.log("GJS-osk: look at me I'm packing an array");
                     keydef.forEach(i => { doAddKey(i); r += 2; c -= (Object.hasOwn(i, "width") ? i.width : 1) * 2 });
                     c += (Object.hasOwn(keydef[0], "width") ? keydef[0].width : 1) * 2;
                     r -= 4;
                 } else {
                     doAddKey(keydef)
-                }
+                }*/
+
+            //Now's as good a time as any to give our physicalLayout keys some default values.
+            if (!Object.hasOwn(keydef, "width")) keydef.width = 1;
+            doAddKey(keydef);
             }
+            
             if (!topBtnWidth) topBtnWidth = ((Object.hasOwn(kRow[kRow.length - 1], "width") && (Object.hasOwn(kRow[kRow.length - 1], "key"))) ? kRow[kRow.length - 1].width : 1)
             const size = c;
             if (!rowSize) rowSize = size;
