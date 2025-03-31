@@ -354,8 +354,9 @@ class Keyboard extends Dialog {
                 orientation: Clutter.Orientation.HORIZONTAL,
             })
         });
-        this.widthPercent = (monitor.width > monitor.height) ? settings.get_int("landscape-width-percent") / 100 : settings.get_int("portrait-width-percent") / 100;
-        this.heightPercent = (monitor.width > monitor.height) ? settings.get_int("landscape-height-percent") / 100 : settings.get_int("portrait-height-percent") / 100;
+        const landscapeAspect = monitor.width > monitor.height;
+        this.widthPercent = landscapeAspect ? settings.get_int("landscape-width-percent") / 100 : settings.get_int("portrait-width-percent") / 100;
+        this.heightPercent = landscapeAspect ? settings.get_int("landscape-height-percent") / 100 : settings.get_int("portrait-height-percent") / 100;
         this.nonDragBlocker = new Clutter.Actor();
         this.buildUI();
         this.draggable = false;
@@ -1135,7 +1136,7 @@ class Keyboard extends Dialog {
             }
             
         } catch (err) {
-            throw new Error("event_time was: "+event_time + ", GJS-OSK: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
+            throw new Error("event_time was: "+event_time + ", GJS-osk: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
         }
     }
 
