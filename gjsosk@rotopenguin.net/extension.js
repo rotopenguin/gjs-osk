@@ -202,7 +202,9 @@ export default class GjsOskExtension extends Extension {
                 keycodes = JSON.parse(contents);
             }
             this.Keyboard = new Keyboard(this.settings, this);
-            this.Keyboard.refresh = refresh
+            console.log("GJS-osk can't attach shit to a global object, like: "+this.Keyboard);
+            global.foobar = this.Keyboard; //debug. If LG isn't going to help me get a grip on my extension's state, then yolo.
+            this.Keyboard.refresh = refresh;
         }
         refresh()
 
@@ -950,8 +952,8 @@ class Keyboard extends Dialog {
                     player.play_from_theme("dialog-information", "tap", null)
                 }
                 if (item.keydef.repeat) {
-                    this.sendKeyRaw(item.code ,Clutter.KeyState.PRESSED);
-                    
+                    this.sendKeyRaw(item.char.code ,Clutter.KeyState.PRESSED);
+                    console.log("GJS-osk: a repeat key is being depressed.");
                 } else if (["delete_btn", "backspace_btn", "up_btn", "down_btn", "left_btn", "right_btn"].some(e => item.has_style_class_name(e))) {
                     item.button_pressed = setTimeout(() => {
                         const oldModBtns = this.modBtns
@@ -1015,7 +1017,8 @@ class Keyboard extends Dialog {
                     onComplete: () => { item.set_scale(1, 1); }
                 })
                 if (item.keydef.repeat) {
-                    this.sendKeyRaw(item.code ,Clutter.KeyState.RELEASED);
+                    console.log("GJS-osk reached releaseEv repeat for backspace.");
+                    this.sendKeyRaw(item.char.code ,Clutter.KeyState.RELEASED);
                 }
                 if (item.button_pressed !== null) {
                     clearTimeout(item.button_pressed)
