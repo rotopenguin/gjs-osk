@@ -779,7 +779,6 @@ class Keyboard extends Dialog {
         let r = 0;
         let c;
         const doAddKey = (keydef) => {
-            //const i = Object.hasOwn(keydef, "key") ? keycodes[keydef.key] : Object.hasOwn(keydef, "split") ? "split" : "empty space";
             const i = keycodes[keydef.key];
             if (i != null && typeof i !== 'string') {
                 if (i.layers.default == null) {
@@ -835,36 +834,20 @@ class Keyboard extends Dialog {
                 keyBtn.visible = true
                 c +=  keydef.width * 2
                 this.keys.push(keyBtn)
-                // [insert handwriting 9]
             }
-            /* else if (i == "empty space") {
-                c += (Object.hasOwn(keydef, "width") ? keydef.width : 1) * 2
-            } */
         }
 
         for (const kRow of currentLayout) {
             c = 0;
-
             for (const keydef of kRow) {
-                /*if (keydef instanceof Array) {
-                    console.log("GJS-osk: look at me I'm packing an array");
-                    keydef.forEach(i => { doAddKey(i); r += 2; c -= (Object.hasOwn(i, "width") ? i.width : 1) * 2 });
-                    c += (Object.hasOwn(keydef[0], "width") ? keydef[0].width : 1) * 2;
-                    r -= 4;
-                } else {
-                    doAddKey(keydef)
-                }*/
-
             //Now's as good a time as any to give our physicalLayout keys some default values.
             if (! keydef?.repeat ) keydef.repeat = false;
             if (! keydef?.width ) keydef.width = 1;
             doAddKey(keydef);
             }
-            
-        //    if (!topBtnWidth) topBtnWidth = ((Object.hasOwn(kRow[kRow.length - 1], "width") && (Object.hasOwn(kRow[kRow.length - 1], "key"))) ? kRow[kRow.length - 1].width : 1)
             const size = c;
             if (!rowSize) rowSize = size;
-			r += 4; 
+            r += 4; 
         }
 
         this.box.add_style_class_name("boxLay");
@@ -877,11 +860,10 @@ class Keyboard extends Dialog {
         } else {
             this.box.set_style("background-color: rgba(" + this.settings.get_double("background-r" + this.settings.scheme) + "," + this.settings.get_double("background-g" + this.settings.scheme) + "," + this.settings.get_double("background-b" + this.settings.scheme) + ", " + this.settings.get_double("background-a" + this.settings.scheme) + "); padding: " + this.settings.get_int("outer-spacing-px") + "px;")
         }
-        if (this.lightOrDark()) {
+        if (this.lightOrDark()) { 
             this.box.add_style_class_name("inverted");
-        } else {
-            this.box.add_style_class_name("regular");
-        }
+        } else this.box.add_style_class_name("regular");
+            
 
         /*const settingsBtn = new St.Button({
             x_expand: true,
@@ -956,6 +938,7 @@ class Keyboard extends Dialog {
                     item.tap_repeat == null
                 }
             })
+
             let pressEv = (evType) => {
                 this.box.set_child_at_index(item, this.box.get_children().length - 1);
                 item.space_motion_handler = null
@@ -1017,7 +1000,8 @@ class Keyboard extends Dialog {
                         releaseEv()
                     }, 1000);
                 }
-            }
+            } 
+
             let releaseEv = () => {
                 item.remove_style_pseudo_class("pressed")
                 item.ease({
@@ -1050,6 +1034,7 @@ class Keyboard extends Dialog {
                 }
                 item.key_pressed = false;
             }
+
             item.connect("button-press-event", () => pressEv("mouse"))
             item.connect("button-release-event", releaseEv)
             item.connect("touch-event", () => {
@@ -1060,8 +1045,8 @@ class Keyboard extends Dialog {
                     releaseEv()
                 }
             })
-        });
-    }
+        }); // thus ends this.keys.forEach(item => {
+    } // buildUI
 
     lightOrDark() {
         let r, g, b;
@@ -1080,6 +1065,7 @@ class Keyboard extends Dialog {
         );
         return hsp > 127.5
     }
+
     releaseAllKeys() {
         let instances = [];
 
@@ -1241,15 +1227,3 @@ class Keyboard extends Dialog {
     }
 }
 
-
-class KeyButton extends St {
-    constructor (i, params) { 
-        new St.Button(params);
-     }
-
-
-    set char(x) {this._char = x }
-
-    get char() {return this._char}
-
-}

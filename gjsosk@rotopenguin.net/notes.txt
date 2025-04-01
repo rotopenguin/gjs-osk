@@ -10,6 +10,6 @@ KeyBtn is a ST.Button
             numlock capslock alt numcapslock shiftcapslock altshift altnumlock shiftnumlock altcapslock shiftnumcapslock altshiftcapslock altshiftnumlock altnumcapslock altshiftnumcapslock       
      .isMod:bool 
      .keydef (I just added it) is the physicalLayouts.json struct.
-        .key = string scancode (particularly stuff like "AB01" through "AE12" for the qwerty/azerty grid. other keys have sensible names like "ESC" or "RCTL" )
+        .key = string scancode (particularly stuff like "AB01" through "AE12" for the qwerty/azerty grid. Other keys have sensible names like "ESC" or "RCTL" )
         .width = default 1
         .repeat = default false (I just added it)
