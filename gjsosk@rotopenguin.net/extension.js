@@ -812,7 +812,8 @@ class Keyboard extends Dialog {
                 }
                 const keyBtn = new St.Button(params)
                 keyBtn.add_style_class_name('key')
-                keyBtn.char = i
+                keyBtn.char = i;
+                keyBtn.keydef = keydef;
                 if (i.code == KC.CAPSL) {
                     this.keymap = Clutter.get_default_backend().get_default_seat().get_keymap()
                     this.capslockConnect = this.keymap.connect("state-changed", (a, e) => {
@@ -855,6 +856,7 @@ class Keyboard extends Dialog {
                 }*/
 
             //Now's as good a time as any to give our physicalLayout keys some default values.
+            if (! keydef?.repeat ) keydef.repeat = false;
             if (! keydef?.width ) keydef.width = 1;
             doAddKey(keydef);
             }

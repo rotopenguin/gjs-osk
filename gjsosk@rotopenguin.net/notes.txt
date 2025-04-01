@@ -1,0 +1,15 @@
+Hmmm.
+
+Structure of keys.
+KeyBtn is a ST.Button
+     .char is a {code:int, layers.{default,numlock,...}} from the keycodes/cc.json file. 
+        .code:int
+        .layers
+            .default = "a" or some such letter
+            .shift = "A" 
+            numlock capslock alt numcapslock shiftcapslock altshift altnumlock shiftnumlock altcapslock shiftnumcapslock altshiftcapslock altshiftnumlock altnumcapslock altshiftnumcapslock       
+     .isMod:bool 
+     .keydef (I just added it) is the physicalLayouts.json struct.
+        .key = string scancode (particularly stuff like "AB01" through "AE12" for the qwerty/azerty grid. other keys have sensible names like "ESC" or "RCTL" )
+        .width = default 1
+        .repeat = default false (I just added it)
