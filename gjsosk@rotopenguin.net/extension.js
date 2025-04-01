@@ -949,7 +949,10 @@ class Keyboard extends Dialog {
                     player = global.display.get_sound_player();
                     player.play_from_theme("dialog-information", "tap", null)
                 }
-                if (["delete_btn", "backspace_btn", "up_btn", "down_btn", "left_btn", "right_btn"].some(e => item.has_style_class_name(e))) {
+                if (item.keydef.repeat) {
+                    this.sendKeyRaw(item.code ,Clutter.KeyState.PRESSED);
+                    
+                } else if (["delete_btn", "backspace_btn", "up_btn", "down_btn", "left_btn", "right_btn"].some(e => item.has_style_class_name(e))) {
                     item.button_pressed = setTimeout(() => {
                         const oldModBtns = this.modBtns
                         item.button_repeat = setInterval(() => {
@@ -1011,6 +1014,9 @@ class Keyboard extends Dialog {
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onComplete: () => { item.set_scale(1, 1); }
                 })
+                if (item.keydef.repeat) {
+                    this.sendKeyRaw(item.code ,Clutter.KeyState.RELEASED);
+                }
                 if (item.button_pressed !== null) {
                     clearTimeout(item.button_pressed)
                     item.button_pressed == null
@@ -1103,6 +1109,12 @@ class Keyboard extends Dialog {
         })
     }
 
+    sendKeyRaw(code,state) {
+        const event_time=Clutter.get_current_event_time()*1000;
+        this.inputDevice.notify_key(event_time, code, state);
+
+    }
+    sendKeyRelease(key){}
 
     sendKey(keys) {
         const event_time=Clutter.get_current_event_time()*1000; // fun fact - Gnome's genuine OSK multiplies this value *1000. 

@@ -1,7 +1,7 @@
 Hmmm.
 
 Structure of keys.
-KeyBtn is a ST.Button
+KeyBtn is a ST.Button. Keyboard.keys is an array of em. AKA "item" at times.
      .char is a {code:int, layers.{default,numlock,...}} from the keycodes/cc.json file. 
         .code:int
         .layers
