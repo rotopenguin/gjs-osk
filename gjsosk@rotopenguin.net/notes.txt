@@ -1,4 +1,6 @@
 Hmmm.
+https://wayland-book.com/seat/keyboard.html
+I knew that modifier-flags was a thing separate from just sending "LALT DEPRESSED" events. 
 
 Structure of keys.
 KeyBtn is a ST.Button. Keyboard.keys is an array of em. AKA "item" at times.
@@ -13,3 +15,6 @@ KeyBtn is a ST.Button. Keyboard.keys is an array of em. AKA "item" at times.
         .key = string scancode (particularly stuff like "AB01" through "AE12" for the qwerty/azerty grid. Other keys have sensible names like "ESC" or "RCTL" )
         .width = default 1
         .repeat = default false (I just added it)
+
+
+Does releaseEv() happen if the keyboard's focus is somehow lost? Do I have to make a key-up happen myself?

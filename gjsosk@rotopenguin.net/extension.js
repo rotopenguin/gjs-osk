@@ -1019,6 +1019,7 @@ class Keyboard extends Dialog {
                 if (item.keydef.repeat) {
                     console.log("GJS-osk reached releaseEv repeat for backspace.");
                     this.sendKeyRaw(item.char.code ,Clutter.KeyState.RELEASED);
+                    return;
                 }
                 if (item.button_pressed !== null) {
                     clearTimeout(item.button_pressed)
