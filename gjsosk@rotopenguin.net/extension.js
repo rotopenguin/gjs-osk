@@ -1116,10 +1116,8 @@ class Keyboard extends Dialog {
     sendKeyRaw(code,state) {
         const event_time=Clutter.get_current_event_time()*1000;
         this.inputDevice.notify_key(event_time, code, state);
-
     }
-    sendKeyRelease(key){}
-
+    
     sendKey(keys) {
         const event_time=Clutter.get_current_event_time()*1000; // fun fact - Gnome's genuine OSK multiplies this value *1000. 
         //mutter's notify_key begets meta_virtual_input_device_native_notify_key, which takes in a uint64_t time_us. 

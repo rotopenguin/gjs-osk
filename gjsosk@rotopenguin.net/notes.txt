@@ -17,4 +17,9 @@ KeyBtn is a ST.Button. Keyboard.keys is an array of em. AKA "item" at times.
         .repeat = default false (I just added it)
 
 
-Does releaseEv() happen if the keyboard's focus is somehow lost? Do I have to make a key-up happen myself?
+Does releaseEv() happen if the keyboard's focus is somehow lost? Do I have to make a key-up happen myself? The decideMod/sendKey path assumes that a keypress is just a quick poke (seperated by a delayed callback.) 
+
+Clutter.get_default_backend().get_default_seat().create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE) ->  metaVirtualInputDeviceNative.
+meta_virtual_input_device_native_class_init() is where everything that GIR can see lives.
+
+ModifierType is where clutter keeps a modifier state. Still unable to find any gir setter that goes near it.

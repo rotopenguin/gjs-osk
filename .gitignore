@@ -1,2 +1,5 @@
 *.compiled
 meta-wayland-keyboard.c
+keyboard.js
+meta-virtual-input-device-native.c
+meta-input-device-native.c
