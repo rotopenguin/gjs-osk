@@ -1274,17 +1274,10 @@ class KeyboardKey extends St.Button {
             
     }
 
-    _hook_callbacks(){ //none of this is right
-        this.connect("button-press-event", () => {this.pressEv_handler()});
+    _hook_callbacks(){ 
+        this.connect("button-press-event", () => {this.pressEv_handler()}); // cannot just pass 'this.pressEv_handler' as an arg, the ()=>{} closure is needed to capture 'this'.
         this.connect("button-release-event", () => {this.releaseEv_handler()});
-        this.connect("touch-event", () => {
-            const cur_ev_type = Clutter.get_current_event().type();
-            if (cur_ev_type == Clutter.EventType.TOUCH_BEGIN) {
-                this.pressEv_handler();
-            } else if (cur_ev_type == Clutter.EventType.TOUCH_END || cur_ev_type == Clutter.EventType.TOUCH_CANCEL) {
-                this.releaseEv_handler();
-            }
-        });
+        this.connect("touch-event", () => {this.touchEv_handler()});
     }
 
     _initialize_style() {
@@ -1318,8 +1311,16 @@ class KeyboardKey extends St.Button {
         }
     }*/
 
+    touchEv_handler() {
+        const cur_ev_type = Clutter.get_current_event().type();
+            if (cur_ev_type == Clutter.EventType.TOUCH_BEGIN) {
+                this.pressEv_handler();
+            } else if (cur_ev_type == Clutter.EventType.TOUCH_END || cur_ev_type == Clutter.EventType.TOUCH_CANCEL) {
+                this.releaseEv_handler();
+            }
+    }
     
-    pressEv_handler() { // not hooked yet
+    pressEv_handler() { 
         this.myKeyboard.box.set_child_at_index(this, this.myKeyboard.box.get_children().length - 1);
         this.space_motion_handler = null
         this.set_scale(1.2, 1.2);
