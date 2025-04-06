@@ -19,6 +19,7 @@ KeyBtn is a ST.Button. Keyboard.keys is an array of em. AKA "item" at times.
    .holdFnDidActivate:bool 
    .holdFnDelayTimer:()=>{closure} if release happens before expiring, act normally. If it does expire, do your holdFn instead.
    .lastPressTime:int hmmmmm
+   .myKeyboard - the Keyboard that you belong to.
 
 
 Does releaseEv() happen if the keyboard's focus is somehow lost? Do I have to make a key-up happen myself? The decideMod/sendKey path assumes that a keypress is just a quick poke (seperated by a delayed callback.) 

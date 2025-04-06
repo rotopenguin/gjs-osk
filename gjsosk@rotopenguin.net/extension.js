@@ -1259,7 +1259,6 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
         if (! this.keydef?.repeat ) this.keydef.repeat = false;
         if (! this.keydef?.width ) this.keydef.width = 1;
         this.myKeyboard = keyboard;
-        this.visible = true;
         this.lastPressTime = 0;
         this.holdFnDidActivate = false;
         this.holdFnDelayTimer = null;
@@ -1267,11 +1266,11 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
         //if ( this.isShiftKey() ) this._init_ShiftKey();
         this._initialize_style();
         this._hook_callbacks();
-
+        this.visible = true;
     }
 
     _hook_callbacks(){ 
-        this.connect("button-press-event", () => {this.pressEv_handler()}); // cannot just pass 'this.pressEv_handler' as an arg, the ()=>{} closure is needed to capture 'this'.
+        this.connect("button-press-event", () => {this.pressEv_handler()}); // cannot just pass 'this.pressEv_handler no-parenthesis' as an arg. The ()=>{} closure is needed to capture 'this'.
         this.connect("button-release-event", () => {this.releaseEv_handler()});
         this.connect("touch-event", () => {this.touchEv_handler()});
         this.connect("destroy", ()=> {this.destroy_handler()});
@@ -1295,7 +1294,6 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
             this.holdFnDelayTimer = null;
             this.holdFnDidActivate = false;
         }
-
     }
 
     touchEv_handler() {
