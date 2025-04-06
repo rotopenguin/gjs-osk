@@ -769,6 +769,7 @@ class Keyboard extends Dialog {
        // let topBtnWidth;
 
         this.shiftButtons = [];
+        this.ModifierButtons = [];
         // [insert handwriting 7]
 
         let currentLayout = layouts[layoutName];
@@ -811,9 +812,10 @@ class Keyboard extends Dialog {
                 if ([42, 54, 29, 125, 56, 100, 97, 58, 69].some(j => { return i.code == j })) {
                     i.isMod = true;
                 }
-                const keyBtn = new St.Button(params)
-                keyBtn.add_style_class_name('key')
-                keyBtn.char = i;
+                const keyBtn = new St.Button(params);
+                //const keyBtn = new KeyboardKey(this,params,i,keydef);
+                keyBtn.add_style_class_name('key'); //
+                keyBtn.char = i; //
                 keyBtn.keydef = keydef;
                 if (i.code == KC.CAPSL) {
                     this.keymap = Clutter.get_default_backend().get_default_seat().get_keymap()
@@ -1005,7 +1007,7 @@ class Keyboard extends Dialog {
                         releaseEv()
                     }, 1000);
                 }
-            } 
+            } //pressEv
 
             let releaseEv = () => {
                 item.remove_style_pseudo_class("pressed")
@@ -1057,6 +1059,7 @@ class Keyboard extends Dialog {
             })
         }); // thus ends this.keys.forEach(item => {
     } // buildUI
+
 
     lightOrDark() {
         let r, g, b;
@@ -1241,3 +1244,228 @@ class Keyboard extends Dialog {
     }
 }
 
+class KeyboardKey extends St.Button {
+    constructor2(keyboard,params,i,keydef) {
+        const c = i.code;
+        //if (c == KC.CAPSL) return new KeyboardCapsLockKey(keyboard,params,i,keydef);
+        if (keydef?.mod) return new KeyboardModifierKey(keyboard,params,i,keydef);
+        return this;
+    }
+
+    constructor(keyboard,params,i,keydef) {
+        super(params);
+        this.char = i;
+        this.keydef = keydef;
+        if (! this.keydef?.repeat ) this.keydef.repeat = false;
+        if (! this.keydef?.width ) this.keydef.width = 1;
+        this.myKeyboard = keyboard;
+        this.visible = false;
+        //if ( this.isCapsLockKey() ) this._init_CapsLockKey();
+        //if ( this.isShiftKey() ) this._init_ShiftKey();
+        this.set_pivot_point(0.5, 0.5);
+
+            
+    }
+
+    _initialize_style() {
+        this.add_style_class_name('key');
+        const mk_set = this.myKeyboard.settings;
+        this.set_style("font-size: " + mk_set.get_int ("font-size-px") + "px; border-radius: " + (mk_set.get_boolean("round-key-corners") ? (mk_set.get_int("border-spacing-px") + 5) + "px;" : "0;") + "background-size: " + mk_set.get_int("font-size-px") + "px; font-weight: " + (mk_set.get_boolean("font-bold") ? "bold" : "normal") + "; border: " + mk_set.get_int("border-spacing-px") + "px solid transparent;");
+        if (this.myKeyboard.lightOrDark()) {
+            this.add_style_class_name("inverted");
+        } else {
+            this.add_style_class_name("regular");
+        }
+    }
+
+    destroy_handler() { //not sure about any of this
+        if (this.button_pressed !== null) {
+            clearTimeout(this.button_pressed)
+            this.button_pressed == null
+        }
+        if (this.button_repeat !== null) {
+            clearInterval(this.button_repeat)
+            this.button_repeat == null
+        }
+        if (this.tap_pressed !== null) {
+            clearTimeout(this.tap_pressed)
+            this.tap_pressed == null
+        }
+        if (this.tap_repeat !== null) {
+            clearInterval(this.tap_repeat)
+            this.tap_repeat == null
+        }
+    }
+
+    
+    pressEv_handler(evType) { // not hooked yet
+        this.myKeyboard.box.set_child_at_index(this, this.myKeyboard.box.get_children().length - 1);
+        this.space_motion_handler = null
+        this.set_scale(1.2, 1.2);
+        this.add_style_pseudo_class("pressed");
+        let player;
+        if (this.myKeyboard.settings.get_boolean("play-sound")) {
+            player = global.display.get_sound_player();
+            player.play_from_theme("dialog-information", "tap", null);
+        }
+        if (this.keydef.repeat) {
+            this.sendKeyRaw(this.char.code ,Clutter.KeyState.PRESSED);
+            console.log("GJS-osk: a repeat key is being depressed.");
+            return;
+        }
+        if (this.keydef?.quickHScroll) {
+            this.pressEv_quickHScroll_handler();
+            return;
+        }
+        /*
+        item.key_pressed = true;
+        item.button_pressed = setTimeout(() => {
+            releaseEv()
+        }, 1000);   
+        */
+    }
+    
+    pressEv_quickHScroll_handler() {
+        this.button_pressed = setTimeout(() => {
+            let lastPos = (this.get_transformed_position()[0] + this.get_transformed_size()[0] / 2);
+            /*if (evType == "mouse") {      //honestly, should this even work with the mouse?
+                this.space_motion_handler = this.connect("motion_event", (actor, event) => {
+                    let absX = event.get_coords()[0];
+                    if (Math.abs(absX - lastPos) > 10) {
+                        if (absX > lastPos) {
+                            this.sendKey([KC.RIGHT]);
+                        } else {
+                            this.sendKey([KC.LEFT]);
+                        }
+                        lastPos = absX;
+                    }
+                })
+            } else { */
+                this.space_motion_handler = this.connect("touch_event", (actor, event) => {
+                    if (event.type() == Clutter.EventType.TOUCH_UPDATE) {
+                        let absX = event.get_coords()[0];
+                        if (Math.abs(absX - lastPos) > 10) {
+                            if (absX > lastPos) {
+                                this.sendKey([KC.RIGHT]);
+                            } else {
+                                this.sendKey([KC.LEFT]);
+                            }
+                            lastPos = absX;
+                        }
+                    }
+                })
+            //} //evtype=mouse
+        }, 750)              
+    }
+
+   /* 
+    isCapsLockKey() { return this.i.code == KC.CAPSL; }
+    _init_CapsLockKey() {
+        this.myKeyboard.keymap = Clutter.get_default_backend().get_default_seat().get_keymap();
+        this.myKeyboard.capslockConnect = this.keyboard.keymap.connect("state-changed", (a, e) => {
+            this.myKeyboard.setCapsLock(this, this.myKeyboard.keymap.get_caps_lock_state());
+        });
+        this.myKeyboard.updateCapsLock = () => this.myKeyboard.setCapsLock(this, this.myKeyboard.keymap.get_caps_lock_state())
+
+    }
+    */
+
+
+    releaseEv_handler() {
+        this.remove_style_pseudo_class("pressed")
+        this.ease({
+            scale_x: 1,
+            scale_y: 1,
+            duration: 100,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => { this.set_scale(1, 1); }
+        })
+        if (this.keydef?.repeat) {
+            //console.log("GJS-osk reached releaseEv repeat for backspace.");
+            this.sendKeyUp();
+            return;
+        }
+
+        if (this.keydef?.quickHScroll) {
+            //do something about the spacebar holding.
+            return;
+        }
+
+        this.sendKeyTap();
+
+        /*if (item.button_pressed !== null) {
+            clearTimeout(item.button_pressed)
+            item.button_pressed == null
+        }
+        if (item.button_repeat !== null) {
+            clearInterval(item.button_repeat)
+            item.button_repeat == null
+        }
+        if (item.space_motion_handler !== null) {
+            item.disconnect(item.space_motion_handler)
+            item.space_motion_handler = null;
+        } else if (item.key_pressed == true || item.space_motion_handler == null) {
+            try {
+                if (!item.char.isMod) {
+                    this.decideMod(item.char)
+                } else {
+                    const modButton = item;
+                    this.decideMod(item.char, modButton)
+                }
+            } catch { }
+        }
+        item.key_pressed = false; */
+    }
+
+    _sendNotifyKey(keycode,event_time,state) {
+        try {
+            this.myKeyboard.inputDevice.notify_key(event_time, keycode, state);
+        } catch(err) {
+            throw new Error("event_time was: "+event_time + ", GJS-osk: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
+        }
+    }
+
+
+    _sendNotifyKeyTap(keycode){ //okay for spacebar handler to use me.
+        let pressTime=Clutter.get_current_event_time()*1000;
+        let releaseTime = pressTime - 1;
+        if (pressTime == 0) { //how?? 
+            console.log("GJS-osk: get_current_event_time is zero. This shouldn't happen.");
+            releaseTime = 0;
+            pressTime = 1;
+        }
+        if (this.key_pressed) console.log("GJS-osk: Trying to tap keycode ",this.char.code, ", but it appears to already be pressed.");
+        this._sendNotifyKey(keycode,pressTime,Clutter.KeyState.PRESSED);
+        this._sendNotifyKey(keycode,releaseTime,Clutter.KeyState.PRESSED);
+    }
+
+    sendKeyDown() {
+        this.key_pressed = true;
+        this._sendNotifyKey(this.char.code, Clutter.get_current_event_time()*1000, Clutter.KeyState.PRESSED);
+    }
+    
+    sendKeyUp(){
+        this.key_pressed = false;
+        this._sendNotifyKey(this.char.code, Clutter.get_current_event_time()*1000, Clutter.KeyState.RELEASED);
+
+    }
+    
+    sendKeyTap(){
+        _this._sendNotifyKeyTap(this.char.code);
+    }
+
+    clearAllModifiers(){
+
+    }
+
+    
+
+} //class KeyboardKey
+
+class KeyboardModifierKey extends KeyboardKey {
+    constructor(keyboard,params,i,keydef) {
+        super(keyboard,params,i,keydef);
+        if (this.i.code == KC.LSHIFT || this.i.code == KC.RSHIFT) this.myKeyboard.shiftButtons.push(this);
+        this.myKeyboard.ModifierButtons.push(this);
+    }
+} //class KeyboardModifierKey

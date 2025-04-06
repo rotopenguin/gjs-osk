@@ -10,7 +10,7 @@ KeyBtn is a ST.Button. Keyboard.keys is an array of em. AKA "item" at times.
             .default = "a" or some such letter
             .shift = "A" 
             numlock capslock alt numcapslock shiftcapslock altshift altnumlock shiftnumlock altcapslock shiftnumcapslock altshiftcapslock altshiftnumlock altnumcapslock altshiftnumcapslock       
-     .isMod:bool 
+         .isMod:bool 
      .keydef (I just added it) is the physicalLayouts.json struct.
         .key = string scancode (particularly stuff like "AB01" through "AE12" for the qwerty/azerty grid. Other keys have sensible names like "ESC" or "RCTL" )
         .width = default 1
