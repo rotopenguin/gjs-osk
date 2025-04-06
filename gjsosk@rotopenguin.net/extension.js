@@ -1277,6 +1277,7 @@ class KeyboardKey extends St.Button {
         this.connect("button-press-event", () => {this.pressEv_handler()}); // cannot just pass 'this.pressEv_handler' as an arg, the ()=>{} closure is needed to capture 'this'.
         this.connect("button-release-event", () => {this.releaseEv_handler()});
         this.connect("touch-event", () => {this.touchEv_handler()});
+        this.connect("destroy", ()=> {this.destroy_handler()});
     }
 
     _initialize_style() {
@@ -1291,24 +1292,14 @@ class KeyboardKey extends St.Button {
         }
     }
 
-    /*destroy_handler() { //not sure about any of this
-        if (this.button_pressed !== null) {
-            clearTimeout(this.button_pressed)
-            this.button_pressed == null
+    destroy_handler() { //not sure about any of this
+        if (this?.holdFnDelayTimer) {
+            clearTimeout(this.holdFnDelayTimer);
+            this.holdFnDelayTimer = null;
+            this.holdFnDidActivate = false;
         }
-        if (this.button_repeat !== null) {
-            clearInterval(this.button_repeat)
-            this.button_repeat == null
-        }
-        if (this.tap_pressed !== null) {
-            clearTimeout(this.tap_pressed)
-            this.tap_pressed == null
-        }
-        if (this.tap_repeat !== null) {
-            clearInterval(this.tap_repeat)
-            this.tap_repeat == null
-        }
-    }*/
+
+    }
 
     touchEv_handler() {
         const cur_ev_type = Clutter.get_current_event().type();
@@ -1337,8 +1328,8 @@ class KeyboardKey extends St.Button {
 
         if (this.keydef?.holdFn) {
             // start holdFn timer,
-            // which is either canceled, or transitions to some other "still being held" handler
-            // doing "one or the other", and not overlapping into both, should be "fun".
+            // which either gets killed by releaseEv before it times out, or transitions to some other "still being held" handler
+            // Try not to race condition.
             // https://gjs-docs.gnome.org/st16~16/st.button#method-fake_release might be useful.
 
             this.holdFnDelayTimer = setTimeout( () => {
@@ -1403,6 +1394,7 @@ class KeyboardKey extends St.Button {
 
     releaseEv_handler() {
         if (this?.holdFnDelayTimer) clearTimeout(this.holdFnDelayTimer); //race condition?
+        this.holdFnDelayTimer = null;
         this.remove_style_pseudo_class("pressed")
         this.ease({
             scale_x: 1,
@@ -1417,7 +1409,7 @@ class KeyboardKey extends St.Button {
         }
 
         if (this.holdFnDidActivate) {
-            
+            this.holdFnDidActivate = false;
             //this.finishUpAlternateHoldingMode
             return;
         }
