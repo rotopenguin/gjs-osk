@@ -462,8 +462,8 @@ class Keyboard extends Dialog {
             clearTimeout(this.keyTimeout);
             this.keyTimeout = null;
         }
-        this.keymap.disconnect(this.capslockConnect);
-        this.keymap.disconnect(this.numLockConnect);
+        //this.keymap.disconnect(this.capslockConnect);
+        //this.keymap.disconnect(this.numLockConnect);
         global.backend.get_monitor_manager().disconnect(this.monitorChecker)
         super.destroy();
         if (this.nonDragBlocker !== null) {
@@ -1245,12 +1245,12 @@ class Keyboard extends Dialog {
 }
 
 
-const idgaf = GObject.registerClass(
+const KeyboardKey = GObject.registerClass(
 class KeyboardKey extends St.Button {
     static constructor2(keyboard,params,i,keydef) {
         const c = i.code;
         //if (c == KC.CAPSL) return new KeyboardCapsLockKey(keyboard,params,i,keydef);
-        if (keydef?.mod) return new KeyboardModifierKey(keyboard,params,i,keydef);
+        //if (keydef?.mod) return new KeyboardModifierKey(keyboard,params,i,keydef);
         return new KeyboardKey(keyboard,params,i,keydef);
     }
 
@@ -1492,6 +1492,7 @@ class KeyboardKey extends St.Button {
 } //class KeyboardKey
 ); //Gobject bindification, godwilling
 
+/*
 class KeyboardModifierKey extends KeyboardKey { //maybe I don't need this after all.
     constructor(keyboard,params,i,keydef) {
         super(keyboard,params,i,keydef);
@@ -1499,3 +1500,4 @@ class KeyboardModifierKey extends KeyboardKey { //maybe I don't need this after 
         this.myKeyboard.ModifierButtons.push(this);
     }
 } //class KeyboardModifierKey
+ */
