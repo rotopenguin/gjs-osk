@@ -1262,21 +1262,22 @@ class KeyboardKey extends St.Button {
         this.keydef.repeat = true; //debug, make all the keys simple
         if (! this.keydef?.width ) this.keydef.width = 1;
         this.myKeyboard = keyboard;
-        this.visible = false;
+        this.visible = true;
         this.holdFnNowActive = false;
         this.lastPressTime = 0;
         this.holdFnDidActivate = false;
         //if ( this.isCapsLockKey() ) this._init_CapsLockKey();
         //if ( this.isShiftKey() ) this._init_ShiftKey();
         this._initialize_style();
+        this._hook_callbacks();
 
             
     }
 
-    hook_callbacks(){ //none of this is right
-        item.connect("button-press-event", () => this.pressEv_handler());
-        item.connect("button-release-event", this.releaseEv_handler);
-        item.connect("touch-event", () => {
+    _hook_callbacks(){ //none of this is right
+        this.connect("button-press-event", () => {this.pressEv_handler()});
+        this.connect("button-release-event", () => {this.releaseEv_handler()});
+        this.connect("touch-event", () => {
             const cur_ev_type = Clutter.get_current_event().type();
             if (cur_ev_type == Clutter.EventType.TOUCH_BEGIN) {
                 this.pressEv_handler();
