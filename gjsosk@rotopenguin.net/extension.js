@@ -543,7 +543,7 @@ class Keyboard extends Dialog {
         }
         xPos -= monitor.x;
         yPos -= monitor.y;
-        let snap_px = this.settings.get_int("snap-spacing-px")
+        let snap_px = this.settings.get_int("snap-spacing-px");
         if (Math.abs(xPos - ((monitor.width * .5) - ((this.width * .5)))) <= 50) {
             xPos = ((monitor.width * .5) - ((this.width * .5)));
         } else if (Math.abs(xPos - snap_px) <= 50) {
@@ -563,6 +563,7 @@ class Keyboard extends Dialog {
 
     setOpenState(percent) {
         let monitor = Main.layoutManager.monitors[currentMonitorId];
+        
         let posX = [this.settings.get_int("snap-spacing-px"), ((monitor.width * .5) - ((this.width * .5))), monitor.width - this.width - this.settings.get_int("snap-spacing-px")][(this.settings.get_int("default-snap") % 3)];
         let posY = [this.settings.get_int("snap-spacing-px"), ((monitor.height * .5) - ((this.height * .5))), monitor.height - this.height - this.settings.get_int("snap-spacing-px")][Math.floor((this.settings.get_int("default-snap") / 3))];
         let mX = [-this.box.width, 0, this.box.width][(this.settings.get_int("default-snap") % 3)];
@@ -707,10 +708,11 @@ class Keyboard extends Dialog {
         this.box.set_opacity(0);
         this.keys = [];
         let monitor = Main.layoutManager.monitors[currentMonitorId]
+        let snap_px = this.settings.get_int("snap-spacing-px");
         let layoutName = Object.keys(layouts)[(monitor.width > monitor.height) ? this.settings.get_int("layout-landscape") : this.settings.get_int("layout-portrait")]; // If the setting # is invalid, too bad.
        
-        this.box.width = Math.round((monitor.width - this.settings.get_int("snap-spacing-px") * 2) * (layoutName.includes("Split") ? 1 : this.widthPercent))
-        this.box.height = Math.round((monitor.height - this.settings.get_int("snap-spacing-px") * 2) * this.heightPercent)
+        this.box.width = Math.round((monitor.width - snap_px * 2) * (layoutName.includes("Split") ? 1 : this.widthPercent))
+        this.box.height = Math.round((monitor.height - snap_px * 2) * this.heightPercent)
 
         if (!this.settings.get_boolean("enable-drag")) {
             this.nonDragBlocker = new Clutter.Actor();
@@ -721,27 +723,27 @@ class Keyboard extends Dialog {
                     this.nonDragBlocker.x = monitor.x;
                     this.nonDragBlocker.y = monitor.y;
                     this.nonDragBlocker.width = monitor.width;
-                    this.nonDragBlocker.height = this.box.height + 2 * this.settings.get_int("snap-spacing-px");
+                    this.nonDragBlocker.height = this.box.height + 2 * snap_px;
                     break;
                 case 3:
                     this.nonDragBlocker.x = monitor.x;
                     this.nonDragBlocker.y = monitor.y;
-                    this.nonDragBlocker.width = this.box.width + 2 * this.settings.get_int("snap-spacing-px");
+                    this.nonDragBlocker.width = this.box.width + 2 * snap_px;
                     this.nonDragBlocker.height = monitor.height;
                     break;
                 case 5:
-                    this.nonDragBlocker.x = monitor.x + monitor.width - (this.box.width + 2 * this.settings.get_int("snap-spacing-px"));
+                    this.nonDragBlocker.x = monitor.x + monitor.width - (this.box.width + 2 * snap_px);
                     this.nonDragBlocker.y = monitor.y;
-                    this.nonDragBlocker.width = this.box.width + 2 * this.settings.get_int("snap-spacing-px");
+                    this.nonDragBlocker.width = this.box.width + 2 * snap_px;
                     this.nonDragBlocker.height = monitor.height;
                     break;
                 case 6:
                 case 7:
                 case 8:
                     this.nonDragBlocker.x = monitor.x;
-                    this.nonDragBlocker.y = monitor.y + monitor.height - (this.box.height + 2 * this.settings.get_int("snap-spacing-px"));
+                    this.nonDragBlocker.y = monitor.y + monitor.height - (this.box.height + 2 * snap_px);
                     this.nonDragBlocker.width = monitor.width;
-                    this.nonDragBlocker.height = this.box.height + 2 * this.settings.get_int("snap-spacing-px");
+                    this.nonDragBlocker.height = this.box.height + 2 * snap_px;
                     break;
             }
             if (this.settings.get_int("default-snap") == 4) {
