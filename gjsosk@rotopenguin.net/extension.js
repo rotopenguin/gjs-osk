@@ -1100,9 +1100,8 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
             player = global.display.get_sound_player();
             player.play_from_theme("dialog-information", "tap", null);
         }
-        if (this.keydef.repeat) {
+        if (this.keydef.repeat || this.keydef.mod) { // the || mod is a quick test. 
             this.sendKeyDown();
-            console.log("GJS-osk: a repeat key is being depressed.");
             return;
         }
 
