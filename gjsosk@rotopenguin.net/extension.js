@@ -1258,7 +1258,7 @@ class KeyboardKey extends St.Button {
         this.char = i;
         this.keydef = keydef;
         if (! this.keydef?.repeat ) this.keydef.repeat = false;
-        this.keydef.repeat = true; //debug, make all the keys simple
+        //this.keydef.repeat = true; //debug, make all the keys simple
         if (! this.keydef?.width ) this.keydef.width = 1;
         this.myKeyboard = keyboard;
         this.visible = true;
@@ -1395,14 +1395,14 @@ class KeyboardKey extends St.Button {
     releaseEv_handler() {
         if (this?.holdFnDelayTimer) clearTimeout(this.holdFnDelayTimer); //race condition?
         this.holdFnDelayTimer = null;
-        this.remove_style_pseudo_class("pressed")
+        this.remove_style_pseudo_class("pressed");
         this.ease({
             scale_x: 1,
             scale_y: 1,
             duration: 100,
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => { this.set_scale(1, 1); }
-        })
+        });
         if (this.keydef?.repeat) {
             this.sendKeyUp();
             return;
@@ -1450,7 +1450,7 @@ class KeyboardKey extends St.Button {
 
     _sendNotifyKeyTap(keycode){ //okay for spacebar handler to use me.
         let releaseTimeUs=Clutter.get_current_event_time()*1000; //get_current_event_time provides milliseconds. notify_key uses µs. 🤷
-        let pressTimeUs = pressTimeUs - 1; //backdate the press so that it "happened" before the release. Just in case if anybody is checking.
+        let pressTimeUs = releaseTimeUs - 1; //backdate the press so that it "happened" before the release. Just in case if anybody is checking.
         if (releaseTimeUs == 0) { //how?? 
             console.log("GJS-osk: get_current_event_time is zero. This should never happen.");
             pressTimeUs = 0;
@@ -1458,7 +1458,7 @@ class KeyboardKey extends St.Button {
         }
         if (this.key_pressed) console.log("GJS-osk: Trying to tap keycode ",this.char.code, ", but it appears to already be pressed.");
         this._sendNotifyKey(keycode,pressTimeUs,Clutter.KeyState.PRESSED);
-        this._sendNotifyKey(keycode,releaseTimeUs,Clutter.KeyState.PRESSED);
+        this._sendNotifyKey(keycode,releaseTimeUs,Clutter.KeyState.RELEASED);
     }
 
     sendKeyDown() {
