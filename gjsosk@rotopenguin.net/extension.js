@@ -1244,6 +1244,8 @@ class Keyboard extends Dialog {
     }
 }
 
+
+const idgaf = GObject.registerClass(
 class KeyboardKey extends St.Button {
     static constructor2(keyboard,params,i,keydef) {
         const c = i.code;
@@ -1488,6 +1490,7 @@ class KeyboardKey extends St.Button {
     
 
 } //class KeyboardKey
+); //Gobject bindification, godwilling
 
 class KeyboardModifierKey extends KeyboardKey { //maybe I don't need this after all.
     constructor(keyboard,params,i,keydef) {
