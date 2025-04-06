@@ -40,7 +40,6 @@
 
 .close_btn,
 .settings_btn,
-/* [insert styles handwriting 1] */
 .backspace_btn,
 .tab_btn,
 .capslock_btn,
@@ -76,7 +75,6 @@
      background-image: url(ui/icons/hicolor/scalable/actions/settings-dark.svg);
 }
 
-/* [insert styles handwriting 2] */
 
 .backspace_btn.regular,
 .backspace_btn.selected.inverted {

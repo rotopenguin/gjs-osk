@@ -89,8 +89,6 @@ class KeyboardMenuToggle extends QuickSettings.QuickMenuToggle {
 let keycodes;
 let layouts;
 let currentMonitorId = 0;
-// [insert handwriting 1]
-
 export default class GjsOskExtension extends Extension {
     _openKeyboard(instant) { 
         if (this.Keyboard.state == State.CLOSED) {
@@ -172,7 +170,6 @@ export default class GjsOskExtension extends Extension {
         }
 
         let refresh = () => {
-            // [insert handwriting 2]
             let currentMonitors = this.settings.get_string("default-monitor").split(";")
             let currentMonitorMap = {};
             let monitors = Main.layoutManager.monitors;
@@ -332,7 +329,6 @@ export default class GjsOskExtension extends Extension {
     }
 }
 
-// [insert handwriting 3]
 
 class Keyboard extends Dialog {
     static [GObject.signals] = {
@@ -362,7 +358,6 @@ class Keyboard extends Dialog {
         this.nonDragBlocker = new Clutter.Actor();
         this.buildUI();
         this.draggable = false;
-        // [insert handwriting 4]
         this.add_child(this.box);
         this.close();
         this.box.set_name("osk-gjs")
@@ -624,7 +619,6 @@ class Keyboard extends Dialog {
                 })
             }
             this.opened = true;
-            // [insert handwriting 5]
         }
     }
 
@@ -668,7 +662,6 @@ class Keyboard extends Dialog {
         this.releaseAllKeys();
         global.compositor.enable_unredirect(); //de-inhibit direct scanout
 
-        // [insert handwrting 6]
     }
 
     vfunc_button_press_event() {
@@ -770,7 +763,6 @@ class Keyboard extends Dialog {
 
         this.shiftButtons = [];
         this.ModifierButtons = [];
-        // [insert handwriting 7]
 
         let currentLayout = layouts[layoutName];
         let width = 0;
@@ -798,7 +790,7 @@ class Keyboard extends Dialog {
                 if (this.settings.get_boolean("show-icons")) {
                     iconKeys = ["left", "up", "right", "down", "backspace", "tab", "capslock", "shift", "enter", "ctrl", "super", "alt", "space"]
                 }
-                // [insert handwriting 8]
+
                 if (iconKeys.some(j => { return i.layers.default.toLowerCase() == j })) {
                     params.style_class = i.layers.default.toLowerCase() + "_btn"
                     for (var key of Object.keys(i.layers)) {
