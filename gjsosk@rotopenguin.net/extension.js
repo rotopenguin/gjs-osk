@@ -1093,12 +1093,10 @@ class Keyboard extends Dialog {
                 }
             }
         }
-
         traverse(keycodes);
         //instances.forEach(i => {
         //    this.inputDevice.notify_key(Clutter.get_current_event_time(), i, Clutter.KeyState.RELEASED);
         //})
-
         this.keys.forEach(item => {
             item.key_pressed = false;
             if (item.button_pressed !== null) {
@@ -1116,12 +1114,12 @@ class Keyboard extends Dialog {
         })
     }
 
-    sendKeyRaw(code,state) {
+    /*sendKeyRaw(code,state) {
         const event_time=Clutter.get_current_event_time()*1000;
         this.inputDevice.notify_key(event_time, code, state);
-    }
+    }*/
     
-    sendKey(keys) {
+    /*sendKey(keys) {
         const event_time=Clutter.get_current_event_time()*1000; // fun fact - Gnome's genuine OSK multiplies this value *1000. 
         //mutter's notify_key begets meta_virtual_input_device_native_notify_key, which takes in a uint64_t time_us. 
         //struct ClutterEvent has a timestamp_us, it looks like get pulls stuff out of there. Do I smell a type mismatch??
@@ -1143,7 +1141,8 @@ class Keyboard extends Dialog {
         } catch (err) {
             throw new Error("event_time was: "+event_time + ", GJS-osk: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
         }
-    }
+    }*/
+
 
     decideMod(i, mBtn) {
         if (i.code == KC.LCTL || i.code == KC.LALT || i.code == KC.RALT || i.code == KC.RCTL || i.code == KC.LWIN) {
@@ -1458,12 +1457,12 @@ class KeyboardKey extends St.Button {
 
 
     _sendNotifyKeyTap(keycode){ //okay for spacebar handler to use me.
-        let pressTimeUs=Clutter.get_current_event_time()*1000; //get_current_event_time provides milliseconds. notify_key uses µs. 🤷
-        let releaseTimeUs = pressTimeUs - 1;
-        if (pressTimeUs == 0) { //how?? 
+        let releaseTimeUs=Clutter.get_current_event_time()*1000; //get_current_event_time provides milliseconds. notify_key uses µs. 🤷
+        let pressTimeUs = pressTimeUs - 1; //backdate the press so that it "happened" before the release. Just in case if anybody is checking.
+        if (releaseTimeUs == 0) { //how?? 
             console.log("GJS-osk: get_current_event_time is zero. This should never happen.");
-            releaseTimeUs = 0;
-            pressTimeUs = 1;
+            pressTimeUs = 0;
+            releaseTimeUs = 1;
         }
         if (this.key_pressed) console.log("GJS-osk: Trying to tap keycode ",this.char.code, ", but it appears to already be pressed.");
         this._sendNotifyKey(keycode,pressTimeUs,Clutter.KeyState.PRESSED);
@@ -1480,13 +1479,18 @@ class KeyboardKey extends St.Button {
         this._sendNotifyKey(this.char.code, Clutter.get_current_event_time()*1000, Clutter.KeyState.RELEASED);
 
     }
-    
+
+  
     sendKeyTap(){
         this._sendNotifyKeyTap(this.char.code);
     }
 
-    clearAllModifiers(){
+    releaseKeyIfDown(){
+        if (this.key_pressed) this.sendKeyUp();
+    }
 
+    clearAllModifiers(){
+        for (aButton of this.myKeyboard.ModifierButtons()) aButton.releaseKeyIfDown();
     }
 
     
