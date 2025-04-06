@@ -1257,11 +1257,13 @@ class KeyboardKey extends St.Button {
         this.char = i;
         this.keydef = keydef;
         if (! this.keydef?.repeat ) this.keydef.repeat = false;
+        this.keydef.repeat = true; //debug, make all the keys simple
         if (! this.keydef?.width ) this.keydef.width = 1;
         this.myKeyboard = keyboard;
         this.visible = false;
-        this.heldLongEnoughForHoldFn = false;
+        this.holdFnNowActive = false;
         this.lastPressTime = 0;
+        this.holdFnDidActivate = false;
         //if ( this.isCapsLockKey() ) this._init_CapsLockKey();
         //if ( this.isShiftKey() ) this._init_ShiftKey();
         this._initialize_style();
@@ -1270,14 +1272,14 @@ class KeyboardKey extends St.Button {
     }
 
     hook_callbacks(){ //none of this is right
-        item.connect("button-press-event", () => pressEv("mouse"));
-        item.connect("button-release-event", releaseEv);
+        item.connect("button-press-event", () => this.pressEv_handler());
+        item.connect("button-release-event", this.releaseEv_handler);
         item.connect("touch-event", () => {
             const cur_ev_type = Clutter.get_current_event().type();
             if (cur_ev_type == Clutter.EventType.TOUCH_BEGIN) {
-                pressEv("touch")
+                this.pressEv_handler();
             } else if (cur_ev_type == Clutter.EventType.TOUCH_END || cur_ev_type == Clutter.EventType.TOUCH_CANCEL) {
-                releaseEv()
+                this.releaseEv_handler();
             }
         });
     }
@@ -1294,7 +1296,7 @@ class KeyboardKey extends St.Button {
         }
     }
 
-    destroy_handler() { //not sure about any of this
+    /*destroy_handler() { //not sure about any of this
         if (this.button_pressed !== null) {
             clearTimeout(this.button_pressed)
             this.button_pressed == null
@@ -1311,10 +1313,10 @@ class KeyboardKey extends St.Button {
             clearInterval(this.tap_repeat)
             this.tap_repeat == null
         }
-    }
+    }*/
 
     
-    pressEv_handler(evType) { // not hooked yet
+    pressEv_handler() { // not hooked yet
         this.myKeyboard.box.set_child_at_index(this, this.myKeyboard.box.get_children().length - 1);
         this.space_motion_handler = null
         this.set_scale(1.2, 1.2);
@@ -1325,7 +1327,7 @@ class KeyboardKey extends St.Button {
             player.play_from_theme("dialog-information", "tap", null);
         }
         if (this.keydef.repeat) {
-            this.sendKeyRaw(this.char.code ,Clutter.KeyState.PRESSED);
+            this.sendKeyDown();
             console.log("GJS-osk: a repeat key is being depressed.");
             return;
         }
@@ -1334,6 +1336,12 @@ class KeyboardKey extends St.Button {
             // start holdFn timer,
             // which is either canceled, or transitions to some other "still being held" handler
             // doing "one or the other", and not overlapping into both, should be "fun".
+            // https://gjs-docs.gnome.org/st16~16/st.button#method-fake_release might be useful.
+
+            this.holdFnDelayTimer = setTimeout( () => {
+                this.holdFnDelayTimer = null;
+                this.holdFnDidActivate = true;
+            },500 )
             return;
         }
         /*
@@ -1365,9 +1373,9 @@ class KeyboardKey extends St.Button {
                         let absX = event.get_coords()[0];
                         if (Math.abs(absX - lastPos) > 10) {
                             if (absX > lastPos) {
-                                this.sendKey([KC.RIGHT]);
+                                this._sendNotifyKeyTap(KC.RIGHT);
                             } else {
-                                this.sendKey([KC.LEFT]);
+                                this._sendNotifyKeyTap(KC.LEFT);
                             }
                             lastPos = absX;
                         }
@@ -1391,6 +1399,7 @@ class KeyboardKey extends St.Button {
 
 
     releaseEv_handler() {
+        if (this?.holdFnDelayTimer) clearTimeout(this.holdFnDelayTimer); //race condition?
         this.remove_style_pseudo_class("pressed")
         this.ease({
             scale_x: 1,
@@ -1400,13 +1409,12 @@ class KeyboardKey extends St.Button {
             onComplete: () => { this.set_scale(1, 1); }
         })
         if (this.keydef?.repeat) {
-            //console.log("GJS-osk reached releaseEv repeat for backspace.");
             this.sendKeyUp();
             return;
         }
 
-        if (this.heldLongEnoughForAlternateHoldingMode) {
-            this.heldLongEnoughForAlternateHoldingMode = false;
+        if (this.holdFnDidActivate) {
+            
             //this.finishUpAlternateHoldingMode
             return;
         }
@@ -1481,7 +1489,7 @@ class KeyboardKey extends St.Button {
 
 } //class KeyboardKey
 
-class KeyboardModifierKey extends KeyboardKey {
+class KeyboardModifierKey extends KeyboardKey { //maybe I don't need this after all.
     constructor(keyboard,params,i,keydef) {
         super(keyboard,params,i,keydef);
         if (this.i.code == KC.LSHIFT || this.i.code == KC.RSHIFT) this.myKeyboard.shiftButtons.push(this);
