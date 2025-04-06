@@ -14,7 +14,11 @@ KeyBtn is a ST.Button. Keyboard.keys is an array of em. AKA "item" at times.
      .keydef (I just added it) is the physicalLayouts.json struct.
         .key = string scancode (particularly stuff like "AB01" through "AE12" for the qwerty/azerty grid. Other keys have sensible names like "ESC" or "RCTL" )
         .width = default 1
-        .repeat = default false (I just added it)
+        .repeat:bool should the ST.Button press/releases be directly turned into Clutter.PRESS/RELEASE, with minimal participation in the rest of the keyboard's state machine?
+   .key_pressed:bool have I sent a PRESSED notify without a corresponding RELEASED?
+   .holdFnDidActivate:bool 
+   .holdFnDelayTimer:()=>{closure} if release happens before expiring, act normally. If it does expire, do your holdFn instead.
+   .lastPressTime:int hmmmmm
 
 
 Does releaseEv() happen if the keyboard's focus is somehow lost? Do I have to make a key-up happen myself? The decideMod/sendKey path assumes that a keypress is just a quick poke (seperated by a delayed callback.) 
@@ -23,3 +27,5 @@ Clutter.get_default_backend().get_default_seat().create_virtual_device(Clutter.I
 meta_virtual_input_device_native_class_init() is where everything that GIR can see lives.
 
 ModifierType is where clutter keeps a modifier state. Still unable to find any gir setter that goes near it.
+
+One trick to release Alt without setting off the "tap alt to move focus to the _F_ile menu" would be to briefly tap another modifier key just before releasing Alt. 

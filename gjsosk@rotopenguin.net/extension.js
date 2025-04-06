@@ -1244,8 +1244,7 @@ class Keyboard extends Dialog {
 }
 
 
-const KeyboardKey = GObject.registerClass(
-class KeyboardKey extends St.Button {
+const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
     static constructor2(keyboard,params,i,keydef) {
         const c = i.code;
         //if (c == KC.CAPSL) return new KeyboardCapsLockKey(keyboard,params,i,keydef);
@@ -1258,19 +1257,17 @@ class KeyboardKey extends St.Button {
         this.char = i;
         this.keydef = keydef;
         if (! this.keydef?.repeat ) this.keydef.repeat = false;
-        //this.keydef.repeat = true; //debug, make all the keys simple
         if (! this.keydef?.width ) this.keydef.width = 1;
         this.myKeyboard = keyboard;
         this.visible = true;
-        this.holdFnNowActive = false;
         this.lastPressTime = 0;
         this.holdFnDidActivate = false;
+        this.holdFnDelayTimer = null;
         //if ( this.isCapsLockKey() ) this._init_CapsLockKey();
         //if ( this.isShiftKey() ) this._init_ShiftKey();
         this._initialize_style();
         this._hook_callbacks();
 
-            
     }
 
     _hook_callbacks(){ 
@@ -1292,7 +1289,7 @@ class KeyboardKey extends St.Button {
         }
     }
 
-    destroy_handler() { //not sure about any of this
+    destroy_handler() { 
         if (this?.holdFnDelayTimer) {
             clearTimeout(this.holdFnDelayTimer);
             this.holdFnDelayTimer = null;
@@ -1338,44 +1335,24 @@ class KeyboardKey extends St.Button {
             },500 )
             return;
         }
-        /*
-        item.key_pressed = true;
-        item.button_pressed = setTimeout(() => {
-            releaseEv()
-        }, 1000);   
-        */
     }
     
     pressEv_quickHScroll_handler() {
         this.button_pressed = setTimeout(() => {
             let lastPos = (this.get_transformed_position()[0] + this.get_transformed_size()[0] / 2);
-            /*if (evType == "mouse") {      //honestly, should this even work with the mouse?
-                this.space_motion_handler = this.connect("motion_event", (actor, event) => {
+            this.space_motion_handler = this.connect("touch_event", (actor, event) => { // No, we are not handling mouse events. Deal with it.
+                if (event.type() == Clutter.EventType.TOUCH_UPDATE) {
                     let absX = event.get_coords()[0];
                     if (Math.abs(absX - lastPos) > 10) {
                         if (absX > lastPos) {
-                            this.sendKey([KC.RIGHT]);
+                            this._sendNotifyKeyTap(KC.RIGHT);
                         } else {
-                            this.sendKey([KC.LEFT]);
+                            this._sendNotifyKeyTap(KC.LEFT);
                         }
                         lastPos = absX;
                     }
-                })
-            } else { */
-                this.space_motion_handler = this.connect("touch_event", (actor, event) => {
-                    if (event.type() == Clutter.EventType.TOUCH_UPDATE) {
-                        let absX = event.get_coords()[0];
-                        if (Math.abs(absX - lastPos) > 10) {
-                            if (absX > lastPos) {
-                                this._sendNotifyKeyTap(KC.RIGHT);
-                            } else {
-                                this._sendNotifyKeyTap(KC.LEFT);
-                            }
-                            lastPos = absX;
-                        }
-                    }
-                })
-            //} //evtype=mouse
+                }
+            })
         }, 750)              
     }
 
@@ -1390,7 +1367,6 @@ class KeyboardKey extends St.Button {
 
     }
     */
-
 
     releaseEv_handler() {
         if (this?.holdFnDelayTimer) clearTimeout(this.holdFnDelayTimer); //race condition?
@@ -1414,29 +1390,6 @@ class KeyboardKey extends St.Button {
             return;
         }
         this.sendKeyTap();
-
-        /*if (item.button_pressed !== null) {
-            clearTimeout(item.button_pressed)
-            item.button_pressed == null
-        }
-        if (item.button_repeat !== null) {
-            clearInterval(item.button_repeat)
-            item.button_repeat == null
-        }
-        if (item.space_motion_handler !== null) {
-            item.disconnect(item.space_motion_handler)
-            item.space_motion_handler = null;
-        } else if (item.key_pressed == true || item.space_motion_handler == null) {
-            try {
-                if (!item.char.isMod) {
-                    this.decideMod(item.char)
-                } else {
-                    const modButton = item;
-                    this.decideMod(item.char, modButton)
-                }
-            } catch { }
-        }
-        item.key_pressed = false; */
     }
 
     _sendNotifyKey(keycode,event_time,state) {
@@ -1447,9 +1400,8 @@ class KeyboardKey extends St.Button {
         }
     }
 
-
     _sendNotifyKeyTap(keycode){ //okay for spacebar handler to use me.
-        let releaseTimeUs=Clutter.get_current_event_time()*1000; //get_current_event_time provides milliseconds. notify_key uses µs. 🤷
+        let releaseTimeUs = Clutter.get_current_event_time()*1000; //get_current_event_time provides milliseconds. notify_key uses µs. 🤷
         let pressTimeUs = releaseTimeUs - 1; //backdate the press so that it "happened" before the release. Just in case if anybody is checking.
         if (releaseTimeUs == 0) { //how?? 
             console.log("GJS-osk: get_current_event_time is zero. This should never happen.");
@@ -1472,7 +1424,6 @@ class KeyboardKey extends St.Button {
 
     }
 
-  
     sendKeyTap(){
         this._sendNotifyKeyTap(this.char.code);
     }
@@ -1488,7 +1439,7 @@ class KeyboardKey extends St.Button {
     
 
 } //class KeyboardKey
-); //Gobject bindification, godwilling
+); //Gobject bindification
 
 /*
 class KeyboardModifierKey extends KeyboardKey { //maybe I don't need this after all.
