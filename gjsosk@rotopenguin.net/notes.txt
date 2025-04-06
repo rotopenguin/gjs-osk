@@ -1,6 +1,6 @@
 Hmmm.
 https://wayland-book.com/seat/keyboard.html
-I knew that modifier-flags was a thing separate from just sending "LALT DEPRESSED" events. 
+I knew that modifier-flags was a thing separate from just sending "LALT DEPRESSED" events. AFAICT, Clutter does not expose anything to let you send a modifier-flags message. 
 
 Structure of keys.
 KeyBtn is a ST.Button. Keyboard.keys is an array of em. AKA "item" at times.
@@ -29,3 +29,18 @@ meta_virtual_input_device_native_class_init() is where everything that GIR can s
 ModifierType is where clutter keeps a modifier state. Still unable to find any gir setter that goes near it.
 
 One trick to release Alt without setting off the "tap alt to move focus to the _F_ile menu" would be to briefly tap another modifier key just before releasing Alt. 
+
+How do I want "modifiers" to work? 
+   I think I want a brief tap to mean "it is locked until the next non-mod is pressed". Should that key truly be held down the entire time? 
+   Quick double-tap means "lock it until it is tapped again (and inhibit weird side effects like tapping alt for menu).
+   Tap, then tap again with no other key intervening - let actions like "alt for menu" and "win for overview" happen.
+   Double-tap lock one modifier, while another is in single-tap lock. Or vice versa. Don't know what I want here.
+   Hold space to enable horizontal scrolly mode (it just taps L/R arrow) - immediately cancel all modifiers.
+   I think I want the rank-and-file keys to repeat, unless there is a modifier in play. 
+
+Other Todo: 
+   Deal with the enormous mess pooped into the journal as gnome-shell shuts down.
+   Rewrite buildUI.
+   Look at the whole top 50% of the extension. There are probably dragons in the enable stuff.
+   Make a crappy .gjs text editor that can use the keyboard standalone?? Won't have to bounce the whole compositor to test stuff anymore.
+   CSS to switch between keyboard layers? To manage transitions?? I dunno if it can automagically propogate changes.
