@@ -808,13 +808,12 @@ class Keyboard extends Dialog {
                 } else {
                     params.label = i.layers.default
                 }
-                i.isMod = false
-                if ([42, 54, 29, 125, 56, 100, 97, 58, 69].some(j => { return i.code == j })) {
-                    i.isMod = true;
-                }
-                const keyBtn = new St.Button(params);
-                //const keyBtn = new KeyboardKey(this,params,i,keydef);
-                keyBtn.add_style_class_name('key'); //
+                //i.isMod = false
+                //if ([42, 54, 29, 125, 56, 100, 97, 58, 69].some(j => { return i.code == j })) i.isMod = true;
+                
+                //const keyBtn = new St.Button(params);
+                const keyBtn = KeyboardKey.constructor2(this,params,i,keydef);
+                /*keyBtn.add_style_class_name('key'); //
                 keyBtn.char = i; //
                 keyBtn.keydef = keydef;
                 if (i.code == KC.CAPSL) {
@@ -831,11 +830,11 @@ class Keyboard extends Dialog {
                     this.updateNumLock = () => this.setNumLock(keyBtn, this.keymap.get_num_lock_state())
                 } else if (i.code == KC.LSHIFT || i.code == KC.RSHIFT) {
                     this.shiftButtons.push(keyBtn)
-                }
+                }*/
 				const buttonHeight = 4; 
                 
 				currentGrid.attach(keyBtn, c, 3 + r, keydef.width * 2, buttonHeight) ;
-                keyBtn.visible = true
+                //keyBtn.visible = true
                 c +=  keydef.width * 2
                 this.keys.push(keyBtn)
             }
@@ -916,7 +915,7 @@ class Keyboard extends Dialog {
         })*/
   
 
-        this.keys.forEach(item => {
+        /*this.keys.forEach(item => {
             item.set_style("font-size: " + this.settings.get_int("font-size-px") + "px; border-radius: " + (this.settings.get_boolean("round-key-corners") ? (this.settings.get_int("border-spacing-px") + 5) + "px;" : "0;") + "background-size: " + this.settings.get_int("font-size-px") + "px; font-weight: " + (this.settings.get_boolean("font-bold") ? "bold" : "normal") + "; border: " + this.settings.get_int("border-spacing-px") + "px solid transparent;");
             if (this.lightOrDark()) {
                 item.add_style_class_name("inverted");
@@ -1057,7 +1056,8 @@ class Keyboard extends Dialog {
                     releaseEv()
                 }
             })
-        }); // thus ends this.keys.forEach(item => {
+        }); // thus ends this.keys.forEach(item => { 
+        */
     } // buildUI
 
 
@@ -1245,11 +1245,11 @@ class Keyboard extends Dialog {
 }
 
 class KeyboardKey extends St.Button {
-    constructor2(keyboard,params,i,keydef) {
+    static constructor2(keyboard,params,i,keydef) {
         const c = i.code;
         //if (c == KC.CAPSL) return new KeyboardCapsLockKey(keyboard,params,i,keydef);
         if (keydef?.mod) return new KeyboardModifierKey(keyboard,params,i,keydef);
-        return this;
+        return new KeyboardKey(keyboard,params,i,keydef);
     }
 
     constructor(keyboard,params,i,keydef) {
@@ -1260,14 +1260,30 @@ class KeyboardKey extends St.Button {
         if (! this.keydef?.width ) this.keydef.width = 1;
         this.myKeyboard = keyboard;
         this.visible = false;
+        this.heldLongEnoughForHoldFn = false;
+        this.lastPressTime = 0;
         //if ( this.isCapsLockKey() ) this._init_CapsLockKey();
         //if ( this.isShiftKey() ) this._init_ShiftKey();
-        this.set_pivot_point(0.5, 0.5);
+        this._initialize_style();
 
             
     }
 
+    hook_callbacks(){ //none of this is right
+        item.connect("button-press-event", () => pressEv("mouse"));
+        item.connect("button-release-event", releaseEv);
+        item.connect("touch-event", () => {
+            const cur_ev_type = Clutter.get_current_event().type();
+            if (cur_ev_type == Clutter.EventType.TOUCH_BEGIN) {
+                pressEv("touch")
+            } else if (cur_ev_type == Clutter.EventType.TOUCH_END || cur_ev_type == Clutter.EventType.TOUCH_CANCEL) {
+                releaseEv()
+            }
+        });
+    }
+
     _initialize_style() {
+        this.set_pivot_point(0.5, 0.5);
         this.add_style_class_name('key');
         const mk_set = this.myKeyboard.settings;
         this.set_style("font-size: " + mk_set.get_int ("font-size-px") + "px; border-radius: " + (mk_set.get_boolean("round-key-corners") ? (mk_set.get_int("border-spacing-px") + 5) + "px;" : "0;") + "background-size: " + mk_set.get_int("font-size-px") + "px; font-weight: " + (mk_set.get_boolean("font-bold") ? "bold" : "normal") + "; border: " + mk_set.get_int("border-spacing-px") + "px solid transparent;");
@@ -1313,8 +1329,11 @@ class KeyboardKey extends St.Button {
             console.log("GJS-osk: a repeat key is being depressed.");
             return;
         }
-        if (this.keydef?.quickHScroll) {
-            this.pressEv_quickHScroll_handler();
+
+        if (this.keydef?.holdFn) {
+            // start holdFn timer,
+            // which is either canceled, or transitions to some other "still being held" handler
+            // doing "one or the other", and not overlapping into both, should be "fun".
             return;
         }
         /*
@@ -1386,11 +1405,11 @@ class KeyboardKey extends St.Button {
             return;
         }
 
-        if (this.keydef?.quickHScroll) {
-            //do something about the spacebar holding.
+        if (this.heldLongEnoughForAlternateHoldingMode) {
+            this.heldLongEnoughForAlternateHoldingMode = false;
+            //this.finishUpAlternateHoldingMode
             return;
         }
-
         this.sendKeyTap();
 
         /*if (item.button_pressed !== null) {
@@ -1427,16 +1446,16 @@ class KeyboardKey extends St.Button {
 
 
     _sendNotifyKeyTap(keycode){ //okay for spacebar handler to use me.
-        let pressTime=Clutter.get_current_event_time()*1000;
-        let releaseTime = pressTime - 1;
-        if (pressTime == 0) { //how?? 
-            console.log("GJS-osk: get_current_event_time is zero. This shouldn't happen.");
-            releaseTime = 0;
-            pressTime = 1;
+        let pressTimeUs=Clutter.get_current_event_time()*1000; //get_current_event_time provides milliseconds. notify_key uses µs. 🤷
+        let releaseTimeUs = pressTimeUs - 1;
+        if (pressTimeUs == 0) { //how?? 
+            console.log("GJS-osk: get_current_event_time is zero. This should never happen.");
+            releaseTimeUs = 0;
+            pressTimeUs = 1;
         }
         if (this.key_pressed) console.log("GJS-osk: Trying to tap keycode ",this.char.code, ", but it appears to already be pressed.");
-        this._sendNotifyKey(keycode,pressTime,Clutter.KeyState.PRESSED);
-        this._sendNotifyKey(keycode,releaseTime,Clutter.KeyState.PRESSED);
+        this._sendNotifyKey(keycode,pressTimeUs,Clutter.KeyState.PRESSED);
+        this._sendNotifyKey(keycode,releaseTimeUs,Clutter.KeyState.PRESSED);
     }
 
     sendKeyDown() {
@@ -1451,7 +1470,7 @@ class KeyboardKey extends St.Button {
     }
     
     sendKeyTap(){
-        _this._sendNotifyKeyTap(this.char.code);
+        this._sendNotifyKeyTap(this.char.code);
     }
 
     clearAllModifiers(){
