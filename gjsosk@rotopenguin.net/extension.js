@@ -89,6 +89,8 @@ class KeyboardMenuToggle extends QuickSettings.QuickMenuToggle {
 let keycodes;
 let layouts;
 let currentMonitorId = 0;
+let sound_press_file;
+let sound_release_file;
 export default class GjsOskExtension extends Extension {
     _openKeyboard(instant) { 
         if (this.Keyboard.state == State.CLOSED) {
@@ -148,6 +150,9 @@ export default class GjsOskExtension extends Extension {
     }
 
     enable() {
+        sound_press_file = Gio.File.new_for_path(this.path + "/sounds/01-0.wav");
+        sound_release_file = Gio.File.new_for_path(this.path + "/sounds/01-1.wav");
+
         this.settings = this.getSettings();
         this.darkSchemeSettings = this.getSettings("org.gnome.desktop.interface");
         this.inputLanguageSettings = InputSourceManager.getInputSourceManager();
@@ -292,6 +297,9 @@ export default class GjsOskExtension extends Extension {
     }
 
     disable() {
+        extensionPath = null;
+        sound_press_file = null;
+        sound_release_file = null;
         this.gnomeKeyboardSettings.disconnect(this.isGnomeKeyboardEnabledHandler);
         this.gnomeKeyboardSettings.set_boolean('screen-keyboard-enabled', this.isGnomeKeyboardEnabled);
 
@@ -1098,7 +1106,8 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
         let player;
         if (this.myKeyboard.settings.get_boolean("play-sound")) {
             player = global.display.get_sound_player();
-            player.play_from_theme("dialog-information", "tap", null);
+            //player.play_from_theme("dialog-information", "tap", null);
+            player.play_from_file(sound_press_file,"sprang",null);
         }
         if (this.keydef.repeat || this.keydef.mod) { // the || mod is a quick test. 
             this.sendKeyDown();
@@ -1161,6 +1170,7 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => { this.set_scale(1, 1); }
         });
+        global.display.get_sound_player().play_from_file(sound_release_file,"sprong",null);
         if (this.keydef?.repeat) {
             this.sendKeyUp();
             return;
