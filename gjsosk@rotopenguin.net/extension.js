@@ -1200,7 +1200,7 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
         if (this.isMod){
             
         }
-        //normal alphanumericcharacter key
+        //normal alphanumericsymbol key
         this.sendKeyTap();
         this.clearAllModifiers();
     }
@@ -1253,7 +1253,7 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
     }
 
     clearModifier(){
-        console.log("GJS-osk: ",this," shouldn't reach clearModifier()");
+        console.log("GJS-osk: shouldn't reach clearModifier() here");
     }
 
     get isMod() {return false}
@@ -1263,12 +1263,11 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
 
 
 const KeyboardModifierKey = GObject.registerClass(class KeyboardModifierKey extends KeyboardKey { 
+
     constructor(keyboard,params,i,keydef) {
         super(keyboard,params,i,keydef);
         if (i.code == KC.LSHIFT || i.code == KC.RSHIFT) keyboard.shiftButtons.push(this);
-        console.log("GJS-osk: in KBMK, wish you were here");
         keyboard.modButtons.push(this); 
-        global.fuckwit = this;
     }
 
     clearModifier(){
