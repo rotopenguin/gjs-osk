@@ -872,7 +872,11 @@ class Keyboard extends Dialog {
         return hsp > 127.5
     }
 
-    releaseAllKeys() {
+    releaseAllKeys(){
+        //implement me
+    }
+
+    releaseAllKeysDeleteme() {
         let instances = [];
 
         function traverse(obj) {
@@ -937,7 +941,7 @@ class Keyboard extends Dialog {
     }*/
 
 
-    decideMod(i, mBtn) {
+    decideModDeleteme(i, mBtn) {
         if (i.code == KC.LCTL || i.code == KC.LALT || i.code == KC.RALT || i.code == KC.RCTL || i.code == KC.LWIN) {
             this.setNormMod(mBtn);
         } else if (i.code == KC.LALT || i.code == KC.RALT) {
@@ -959,7 +963,7 @@ class Keyboard extends Dialog {
         }
     }
 
-    setCapsLock(button, state) {
+    setCapsLockDeleteme(button, state) {
         if (state) {
             button.add_style_class_name("selected");
             this.capsL = true;
@@ -970,7 +974,7 @@ class Keyboard extends Dialog {
         this.updateKeyLabels();
     }
 
-    setNumLock(button, state) {
+    setNumLockDeleteme(button, state) {
         if (state) {
             button.add_style_class_name("selected");
             this.numsL = true;
@@ -981,7 +985,7 @@ class Keyboard extends Dialog {
         this.updateKeyLabels();
     }
 
-    setAlt(button) {
+    setAltDeleteme(button) {
         this.alt = !this.alt;
         this.updateKeyLabels();
         if (!this.alt) {
@@ -1013,7 +1017,7 @@ class Keyboard extends Dialog {
     }
 
 
-    setNormMod(button) {
+    setNormModDeleteme(button) {
         if (this.mod.includes(button.char.code)) {
             this.mod.splice(this.mod.indexOf(button.char.code), this.mod.indexOf(button.char.code) + 1);
             if (!(button.char.code == KC.LSHIFT) && !(button.char.code == KC.RSHIFT)) //shift
@@ -1029,7 +1033,7 @@ class Keyboard extends Dialog {
         }
     }
 
-    resetAllMod() {
+    resetAllModDeleteme() {
         this.shift = false;
         this.alt = false;
         this.updateKeyLabels()
@@ -1181,14 +1185,16 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
             //this.finishUpAlternateHoldingMode
             return;
         }
+        //normal alphanumericcharacter key
         this.sendKeyTap();
+        this.clearAllModifiers();
     }
 
     _sendNotifyKey(keycode,event_time,state) {
         try {
             this.myKeyboard.inputDevice.notify_key(event_time, keycode, state);
         } catch(err) {
-            throw new Error("event_time was: "+event_time + ", GJS-osk: An unknown error occured. Welp.):\n\n" + err + "\n\nKeys Pressed: " + keys);
+            throw new Error("event_time was: "+event_time + ", GJS-osk: An unknown error occured. Welp.):\n\n" + err + "\n\nKeycode Pressed: " + keycode);
         }
     }
 
@@ -1200,20 +1206,21 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
             pressTimeUs = 0;
             releaseTimeUs = 1;
         }
-        if (this.key_pressed) console.log("GJS-osk: Trying to tap keycode ",this.char.code, ", but it appears to already be pressed.");
-        this._sendNotifyKey(keycode,pressTimeUs,Clutter.KeyState.PRESSED);
+        if (this.key_pressed) {
+            console.log("GJS-osk: Trying to tap keycode ",this.char.code, ", but it appears to already be pressed.");
+        } else {this._sendNotifyKey(keycode,pressTimeUs,Clutter.KeyState.PRESSED);}
         this._sendNotifyKey(keycode,releaseTimeUs,Clutter.KeyState.RELEASED);
     }
 
     sendKeyDown() {
+        if (! this.key_pressed) this._sendNotifyKey(this.char.code, Clutter.get_current_event_time()*1000, Clutter.KeyState.PRESSED);
         this.key_pressed = true;
-        this._sendNotifyKey(this.char.code, Clutter.get_current_event_time()*1000, Clutter.KeyState.PRESSED);
+
     }
     
     sendKeyUp(){
+        if (this.key_pressed) this._sendNotifyKey(this.char.code, Clutter.get_current_event_time()*1000, Clutter.KeyState.RELEASED);
         this.key_pressed = false;
-        this._sendNotifyKey(this.char.code, Clutter.get_current_event_time()*1000, Clutter.KeyState.RELEASED);
-
     }
 
     sendKeyTap(){
