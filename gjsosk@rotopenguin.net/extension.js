@@ -1197,7 +1197,9 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
             //this.finishUpAlternateHoldingMode
             return;
         }
-        if (this.isMod)
+        if (this.isMod){
+            
+        }
         //normal alphanumericcharacter key
         this.sendKeyTap();
         this.clearAllModifiers();
