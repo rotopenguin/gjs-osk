@@ -370,7 +370,8 @@ class Keyboard extends Dialog {
         this.close();
         this.box.set_name("osk-gjs")
         this.mod = [];
-        this.modBtns = [];
+        this.modBtns = []; // obsolete concept methinks
+        
         this.capsL = false;
         this.shift = false;
         this.alt = false;
@@ -772,7 +773,8 @@ class Keyboard extends Dialog {
        // let topBtnWidth;
 
         this.shiftButtons = [];
-        this.ModifierButtons = [];
+        this.modButtons = [];
+        //this.ModifierButtons = [];
 
         let currentLayout = layouts[layoutName];
         let width = 0;
@@ -941,6 +943,7 @@ class Keyboard extends Dialog {
     }*/
 
 
+
     decideModDeleteme(i, mBtn) {
         if (i.code == KC.LCTL || i.code == KC.LALT || i.code == KC.RALT || i.code == KC.RCTL || i.code == KC.LWIN) {
             this.setNormMod(mBtn);
@@ -994,7 +997,7 @@ class Keyboard extends Dialog {
         this.setNormMod(button);
     }
 
-    setShift(button) {
+    setShiftDeleteme(button) {
         this.shift = !this.shift;
         this.updateKeyLabels();
         if (!this.shift) {
@@ -1006,7 +1009,7 @@ class Keyboard extends Dialog {
         this.setNormMod(button);
     }
 
-    updateKeyLabels() {
+    updateKeyLabelsDeleteme() {
         this.keys.forEach(key => {
             if (key.char != undefined) {
                 let layer = (this.alt ? 'alt' : '') + (this.shift ? 'shift' : '') + (this.numsL ? 'num' : '') + (this.capsL ? 'caps' : '') + (this.numsL || this.capsL ? 'lock' : '')
@@ -1045,7 +1048,7 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
     static constructor2(keyboard,params,i,keydef) {
         const c = i.code;
         //if (c == KC.CAPSL) return new KeyboardCapsLockKey(keyboard,params,i,keydef);
-        //if (keydef?.mod) return new KeyboardModifierKey(keyboard,params,i,keydef);
+        if (keydef?.mod) return new KeyboardModifierKey(keyboard,params,i,keydef);
         return new KeyboardKey(keyboard,params,i,keydef);
     }
 
@@ -1102,11 +1105,15 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
             }
     }
     
-    pressEv_handler() { 
+    pressEv_handler_applyStyle(){
         this.myKeyboard.box.set_child_at_index(this, this.myKeyboard.box.get_children().length - 1);
         this.space_motion_handler = null
         this.set_scale(1.2, 1.2);
         this.add_style_pseudo_class("pressed");
+    }
+
+    pressEv_handler() { 
+        this.pressEv_handler_applyStyle();
         let player;
         if (this.myKeyboard.settings.get_boolean("play-sound")) {
             player = global.display.get_sound_player();
@@ -1163,9 +1170,7 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
     }
     */
 
-    releaseEv_handler() {
-        if (this?.holdFnDelayTimer) clearTimeout(this.holdFnDelayTimer); //race condition?
-        this.holdFnDelayTimer = null;
+    releaseEv_handler_removeStyle(){
         this.remove_style_pseudo_class("pressed");
         this.ease({
             scale_x: 1,
@@ -1174,6 +1179,13 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
             mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => { this.set_scale(1, 1); }
         });
+
+    }
+
+    releaseEv_handler() {
+        if (this?.holdFnDelayTimer) clearTimeout(this.holdFnDelayTimer); //race condition?
+        this.holdFnDelayTimer = null;
+        this.releaseEv_handler_removeStyle();
         global.display.get_sound_player().play_from_file(sound_release_file,"sprong",null);
         if (this.keydef?.repeat) {
             this.sendKeyUp();
@@ -1185,6 +1197,7 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
             //this.finishUpAlternateHoldingMode
             return;
         }
+        if (this.isMod)
         //normal alphanumericcharacter key
         this.sendKeyTap();
         this.clearAllModifiers();
@@ -1227,25 +1240,52 @@ const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
         this._sendNotifyKeyTap(this.char.code);
     }
 
-    releaseKeyIfDown(){
-        if (this.key_pressed) this.sendKeyUp();
-    }
 
     clearAllModifiers(){
-        for (aButton of this.myKeyboard.ModifierButtons()) aButton.releaseKeyIfDown();
+        //console.log("GJS-osk: modbuttons looks like ", this.myKeyboard.modButtons[0]);
+        for (var aButton of this.myKeyboard.modButtons) {
+            //console.log("GJS-osk: and you get a clearModifier ", aButton);
+            aButton.clearModifier();
+            
+        }
     }
 
+    clearModifier(){
+        console.log("GJS-osk: ",this," shouldn't reach clearModifier()");
+    }
+
+    get isMod() {return false}
     
 
-} //class KeyboardKey
-); //Gobject bindification
+}); // } class KeyboardKey ) GObject
 
-/*
-class KeyboardModifierKey extends KeyboardKey { //maybe I don't need this after all.
+
+const KeyboardModifierKey = GObject.registerClass(class KeyboardModifierKey extends KeyboardKey { 
     constructor(keyboard,params,i,keydef) {
         super(keyboard,params,i,keydef);
-        if (this.i.code == KC.LSHIFT || this.i.code == KC.RSHIFT) this.myKeyboard.shiftButtons.push(this);
-        this.myKeyboard.ModifierButtons.push(this);
+        if (i.code == KC.LSHIFT || i.code == KC.RSHIFT) keyboard.shiftButtons.push(this);
+        console.log("GJS-osk: in KBMK, wish you were here");
+        keyboard.modButtons.push(this); 
+        global.fuckwit = this;
     }
-} //class KeyboardModifierKey
- */
+
+    clearModifier(){
+        if (this.key_pressed){
+            this.sendKeyUp();
+            //clear my oneshot or locked state
+            //reset my appearance
+            this.remove_style_class_name("selected");
+        }
+    this.key_pressed = false;
+    }
+
+    get isMod(){return true}
+
+    pressEv_handler_applyStyle(){
+        super.pressEv_handler_applyStyle();
+        this.add_style_class_name("selected");
+    }
+
+ 
+}); // } class KeyboardModifierKey ) GObject
+ 
