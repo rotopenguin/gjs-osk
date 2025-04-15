@@ -297,7 +297,6 @@ export default class GjsOskExtension extends Extension {
     }
 
     disable() {
-        extensionPath = null;
         sound_press_file = null;
         sound_release_file = null;
         this.gnomeKeyboardSettings.disconnect(this.isGnomeKeyboardEnabledHandler);
