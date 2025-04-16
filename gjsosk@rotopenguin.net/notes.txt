@@ -45,3 +45,4 @@ Other Todo:
    Look at the whole top 50% of the extension. There are probably dragons in the enable stuff.
    Make a crappy .gjs text editor that can use the keyboard standalone?? Won't have to bounce the whole compositor to test stuff anymore.
    CSS to switch between keyboard layers? To manage transitions?? I dunno if it can automagically propogate changes.
+      On second thought, I think the advanced CSS stuff is only in GTK, not ST.
