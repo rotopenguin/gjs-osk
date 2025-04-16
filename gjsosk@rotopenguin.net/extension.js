@@ -326,7 +326,6 @@ export default class GjsOskExtension extends Extension {
         }
         this._toggle?.destroy();
         this._toggle = null;
-        this.settings = null;
         this.Keyboard = null;
         keycodes = null;
         if (this._originalLastDeviceIsTouchscreen !== null) {
