@@ -46,3 +46,16 @@ Other Todo:
    Make a crappy .gjs text editor that can use the keyboard standalone?? Won't have to bounce the whole compositor to test stuff anymore.
    CSS to switch between keyboard layers? To manage transitions?? I dunno if it can automagically propogate changes.
       On second thought, I think the advanced CSS stuff is only in GTK, not ST.
+
+
+Getting caught up on 9mo of changes upstream...
+
+Did 850de32 Don't refresh the keyboard if no monitors are present at 'monitors-changed' event
+Skip 900ccf6 Check for current keymap json existing
+   This also steps into the whole "extract tar.gz" mess, which I snipped. Yuck.
+Skip 8818655 Add custom tap sounds
+TODO cd9d7a2 Fallback to default monitor if defined monitor isn't available (hopefully fixes # 112)
+Skip 982e962 Disable auto-open when keyboard toggle is disabled in Quick Settings.
+   HMM I think I want less of this settings-itis.
+83dc9a2 Fix rescaling keyboard upon opening access dialog # 117
+   
