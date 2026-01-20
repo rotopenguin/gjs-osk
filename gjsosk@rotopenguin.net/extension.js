@@ -30,14 +30,15 @@ const State = {
 const KC = {
     LSHIFT: 42,
     RSHIFT: 54,
-    CAPSL: 58,
-    NUML: 69,
-    LALT: 56,
-    RALT: 100,
-    LCTL:29,
-    RCTL: 97,
-    LWIN: 125,
-    LEFT: 105,
+    CAPSL:  58,
+    NUML:   69,
+    LALT:   56,
+    RALT:  100,
+    LCTL:   29,
+    RCTL:   97,
+    LWIN:  125,
+    RWIN:  126,
+    LEFT:  105,
     RIGHT: 106,
 };
 

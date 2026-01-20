@@ -89,5 +89,18 @@ fd51c37 fix: prevent systemd log flooding
    May need to look at the SafeKeyboard stuff...
 DID 6cf7640 More excess logging fixes
    does a signal_handler_is_connected check before various keymap.disconnect actions.
-
-... keep moving up https://github.com/Vishram1123/gjs-osk/commits/main/gjsosk%40vishram1123.com/extension.js
+51ef848 Add check to see if settings exists before proceeding with extension init (fixes # 123)
+   I don't see how settings could even come up with a "whoopsy not here" state. If that's the case, should enable() return a sad value(is there such a thing)?
+76afc01 Add config knobs in physical layouts for enabling/disabling split, settings, and close (fixes # 127)
+   I think I rewrote most of this stuff. Don't think there's a whole lot to learn from it.
+9305604 Fix all references which still use the name
+   Don't see anything too useful here. Reminds me, I should ditch the "split" stuff.
+c279187 Clear actions for drag handles when split (related to # 128)
+   Drag handles? NOPE.
+1cad725 Don't initialize keyboard if settings is null (fixes # 123)
+   Isn't this 51ef848 all over again?
+f16fcff Integrate usage of layout editor, to create custom layouts
+   I Don't want a layout editor. 
+3770c6a and fc0fbd0 - add Lwin and rwin to mod keys.
+   Yeah I already have that.
+https://github.com/Vishram1123/gjs-osk/commits/main/gjsosk%40vishram1123.com/extension.js
