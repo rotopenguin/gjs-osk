@@ -882,8 +882,8 @@ class Keyboard extends Dialog {
     releaseAllKeys(){
         //implement me
     }
-
-    releaseAllKeysDeleteme() {
+    
+    /*releaseAllKeysDeleteme() {
         let instances = [];
 
         function traverse(obj) {
@@ -916,7 +916,7 @@ class Keyboard extends Dialog {
                 item.space_motion_handler = null;
             }
         })
-    }
+    } */
 
     /*sendKeyRaw(code,state) {
         const event_time=Clutter.get_current_event_time()*1000;
@@ -948,7 +948,7 @@ class Keyboard extends Dialog {
     }*/
 
 
-
+    /*
     decideModDeleteme(i, mBtn) {
         if (i.code == KC.LCTL || i.code == KC.LALT || i.code == KC.RALT || i.code == KC.RCTL || i.code == KC.LWIN) {
             this.setNormMod(mBtn);
@@ -1046,7 +1046,9 @@ class Keyboard extends Dialog {
         this.alt = false;
         this.updateKeyLabels()
     }
-}
+    */
+
+} // } class Keyboard
 
 
 const KeyboardKey = GObject.registerClass( class KeyboardKey extends St.Button {
