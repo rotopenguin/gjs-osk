@@ -117,7 +117,8 @@ export default class GjsOskExtension extends Extension {
     }
 
     open_interval() {
-        global.stage.disconnect(this.tapConnect)
+        if (this.tapConnect && GObject.signal_handler_is_connected(global.stage, this.tapConnect))
+            global.stage.disconnect(this.tapConnect);
         if (this.openInterval !== null) {
             clearInterval(this.openInterval);
             this.openInterval = null;
@@ -467,8 +468,10 @@ class Keyboard extends Dialog {
             clearTimeout(this.keyTimeout);
             this.keyTimeout = null;
         }
-        //this.keymap.disconnect(this.capslockConnect);
-        //this.keymap.disconnect(this.numLockConnect);
+        //if (this.capsLockConnect && GObject.signal_handler_is_connected(this.keymap, this.capsLockConnect))
+        //    this.keymap.disconnect(this.capsLockConnect);
+        //if (this.numLockConnect && GObject.signal_handler_is_connected(this.keymap, this.numLockConnect))
+        //    this.keymap.disconnect(this.numLockConnect);
         global.backend.get_monitor_manager().disconnect(this.monitorChecker)
         super.destroy();
         if (this.nonDragBlocker !== null) {
