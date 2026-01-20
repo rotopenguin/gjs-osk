@@ -104,3 +104,5 @@ f16fcff Integrate usage of layout editor, to create custom layouts
 3770c6a and fc0fbd0 - add Lwin and rwin to mod keys.
    Yeah I already have that.
 https://github.com/Vishram1123/gjs-osk/commits/main/gjsosk%40vishram1123.com/extension.js
+
+Hmm, did the keyboard always fight with(and usually clobber) OSD?
