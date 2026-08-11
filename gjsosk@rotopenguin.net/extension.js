@@ -353,8 +353,8 @@ class Keyboard extends Dialog {
         this.inputDevice = Clutter.get_default_backend().get_default_seat().create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
         this.settings = settings;
         let monitor = Main.layoutManager.monitors[currentMonitorId];
-        //super._init(Main.layoutManager.modalDialogGroup, 'db-keyboard-content');
-        super._init(Main.uiGroup, 'db-keyboard-content');
+        super._init(Main.layoutManager.modalDialogGroup, 'db-keyboard-content'); 
+        //super._init(Main.uiGroup, 'db-keyboard-content'); //uiGroup is being deprecated. Also, this way z-fights with the volume overlay.
         this.box = new St.Widget({
             reactive: true,
             layout_manager: new Clutter.GridLayout({
