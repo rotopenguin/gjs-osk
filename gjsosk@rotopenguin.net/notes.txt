@@ -106,3 +106,6 @@ f16fcff Integrate usage of layout editor, to create custom layouts
 https://github.com/Vishram1123/gjs-osk/commits/main/gjsosk%40vishram1123.com/extension.js
 
 Hmm, did the keyboard always fight with(and usually clobber) OSD?
+
+
+The gnome calculator has a GtkInputHints::GTK_INPUT_INHIBIT_OSK flag on its text box, I don't think that gtk send that anywhere? Clutter or ibus has its own ibus.InputHints thing that sort of looks similar, but deviates from GTK's concepts midway through. And it definitely doesn't have an idea of "inhibit". The behaviour of Calculator + Gnome's keyboard is inconsistent - if you switch to calc from a program that didn't already have the calc up, it'll stay away. If you switch from a program that did, well the keyboard's staying. I don't know how the hint has any advisory role, it's nowhere in gtk or adwaita's code. 
